@@ -15,8 +15,8 @@ import { LogLevel } from '@framework/live2dcubismframework';
 export const CanvasSize: { width: number; height: number } | 'auto' = 'auto';
 
 // 画面
-export const ViewScale = 1.0;
-export const ViewMaxScale = 2.0;
+export const ViewScale = 2.5;
+export const ViewMaxScale = 4.0;
 export const ViewMinScale = 0.8;
 
 export const ViewLogicalLeft = -1.0;

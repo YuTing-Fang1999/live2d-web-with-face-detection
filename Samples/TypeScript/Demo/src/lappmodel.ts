@@ -435,15 +435,14 @@ export class LAppModel extends CubismUserModel {
   }
 
   onSocketDataRecv(data) {
-    console.log('[lappmodel] [onSocketDataRecv] data: ', data);
-    console.log(data.pitch);
+    // console.log('[lappmodel] [onSocketDataRecv] data: ', data);
     if (data) {
-      this._roll = data.roll * 50;
-      this._pitch = data.pitch * 50;
-      this._yaw = data.yaw * 50;
-      this._eyeBallX = data._eyeBallX * 3;
-      this._eyeBallY = data._eyeBallY * 3;
-      console.log(this._roll, this._pitch, this._yaw);
+      this._roll = data.roll;
+      this._pitch = data.pitch;
+      this._yaw = data.yaw;
+      // this._eyeBallX = data._eyeBallX * 3;
+      // this._eyeBallY = data._eyeBallY * 3;
+      // console.log(this._roll, this._pitch, this._yaw);
 
     }
   }
@@ -454,7 +453,7 @@ export class LAppModel extends CubismUserModel {
 
   initSocketIO() {
     console.log('[lappmodel] [initSocketIO] Try to connect!');
-    const socket = io('http://localhost:5252/', { transports : ['websocket'] });
+    const socket = io('http://localhost:5252/', { transports: ['websocket'] });
     const onSocketDataRecvBind = this.onSocketDataRecv;
     onSocketDataRecvBind.bind(this);
 
@@ -499,10 +498,10 @@ export class LAppModel extends CubismUserModel {
     //     LAppDefine.PriorityIdle
     //   );
     // } else {
-      motionUpdated = this._motionManager.updateMotion(
-        this._model,
-        deltaTimeSeconds
-      ); // モーションを更新
+    // motionUpdated = this._motionManager.updateMotion(
+    //   this._model,
+    //   deltaTimeSeconds
+    // ); // モーションを更新
     // }
     this._model.saveParameters(); // 状態を保存
     //--------------------------------------------------------------------------
@@ -520,10 +519,10 @@ export class LAppModel extends CubismUserModel {
     }
 
     // ドラッグによる変化
-    // ドラッグによる顔の向きの調整
-    this._model.addParameterValueById(this._idParamAngleX, this._roll); // -30から30の値を加える
-    this._model.addParameterValueById(this._idParamAngleY, this._pitch);
-    this._model.addParameterValueById(this._idParamAngleZ, this._yaw);
+    // ドラッグによる顔の向きの調整// -30から30の値を加える
+    this._model.addParameterValueById(this._idParamAngleX, this._yaw); //面左右 yaw
+    this._model.addParameterValueById(this._idParamAngleY, this._pitch); //上下 pitch
+    this._model.addParameterValueById(this._idParamAngleZ, this._roll); //倒左右 roll
 
     // ドラッグによる体の向きの調整
     this._model.addParameterValueById(this._idParamBodyAngleX, this._dragX * 10); // -10から10の値を加える

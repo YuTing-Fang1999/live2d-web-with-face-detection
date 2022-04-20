@@ -74,7 +74,11 @@ export class LAppView {
       LAppDefine.ViewLogicalMaxBottom,
       LAppDefine.ViewLogicalMaxTop
     );
+
+    this._viewMatrix.adjustTranslate(0, -0.5);
+
   }
+
 
   /**
    * 解放する
