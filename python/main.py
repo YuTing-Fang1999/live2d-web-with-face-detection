@@ -176,6 +176,9 @@ def main():
             data = {
                 'roll': roll, 'pitch': pitch, 'yaw': yaw,
                 # '_eyeBallX': random(), '_eyeBallY': random(),
+                'eyeLOpen': ear_left*5 - 1.7, 'eyeROpen': ear_right*5 - 1.7,
+                'mouthOpen': mar,
+                
             }
             # send info to web
             if args.connect:
@@ -189,7 +192,7 @@ def main():
                 send_info_to_web(socket,data)
 
             if args.debug:
-                print_debug_msg(data)
+                print(data['mouthOpen']*2)
                 pass
 
 

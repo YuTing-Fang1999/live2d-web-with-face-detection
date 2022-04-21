@@ -75,7 +75,7 @@ export class LAppView {
       LAppDefine.ViewLogicalMaxTop
     );
 
-    this._viewMatrix.adjustTranslate(0, -0.5);
+    this._viewMatrix.adjustTranslate(0, -0.52);
 
   }
 
