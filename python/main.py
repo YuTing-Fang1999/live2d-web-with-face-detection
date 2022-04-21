@@ -38,6 +38,11 @@ def send_info_to_web(s, data):
 def print_debug_msg(data):
     print(data)
 
+def threshold(v, L, H):
+    if L<=v and v<=H: return 0;
+    if H<v : return 1;
+    if v<L : return -1;
+
 def main():
 
     cap = cv2.VideoCapture(args.cam)
@@ -172,13 +177,19 @@ def main():
             #     % (steady_pose_eye[0], steady_pose_eye[1], steady_pose_eye[2], steady_pose_eye[3]))
             # print("EAR_LEFT: %.2f; EAR_RIGHT: %.2f" % (ear_left, ear_right))
             # print("MAR: %.2f; Mouth Distance: %.2f" % (mar, steady_mouth_dist))
-
+            # eyeBallX = (x_ratio_left + x_ratio_right)/2
+            # eyeBallX = -(steady_pose_eye[2][0] + steady_pose_eye[4][0])/2
+            # eyeBallY = -(steady_pose_eye[3][0] + steady_pose_eye[5][0])/2
+            eyeBallX = -(pose_eye[2] + pose_eye[4])/2
+            eyeBallY = -(pose_eye[3] + pose_eye[5])/2
+            
             data = {
                 'roll': roll, 'pitch': pitch, 'yaw': yaw,
-                # '_eyeBallX': random(), '_eyeBallY': random(),
-                'eyeLOpen': ear_left*5 - 1.7, 'eyeROpen': ear_right*5 - 1.7,
+                'eyeLOpen': ear_left*6 - 1.5,
+                'eyeROpen': ear_right*6 - 1.5,
                 'mouthOpen': mar,
-                
+                'eyeBallX': -np.around(eyeBallX+0.5,1)*10,
+                'eyeBallY': threshold(eyeBallY,-0.55,-0.35),
             }
             # send info to web
             if args.connect:
@@ -192,7 +203,8 @@ def main():
                 send_info_to_web(socket,data)
 
             if args.debug:
-                print(data['mouthOpen']*2)
+                if data['eyeBallY'] != 0:
+                    print(data['eyeBallY'])
                 pass
 
 
@@ -200,7 +212,7 @@ def main():
 
             # pose_estimator.draw_axis(img, pose[0], pose[1])
 
-            pose_estimator.draw_axes(img_facemesh, steady_pose[0], steady_pose[1])
+            # pose_estimator.draw_axes(img_facemesh, steady_pose[0], steady_pose[1])
 
         else:
             # reset our pose estimator

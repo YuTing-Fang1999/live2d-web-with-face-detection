@@ -443,9 +443,8 @@ export class LAppModel extends CubismUserModel {
       this._eyeLOpen = data.eyeLOpen;
       this._eyeROpen = data.eyeROpen;
       this._mouthOpen = data.mouthOpen;
-      // this._eyeBallX = data._eyeBallX * 3;
-      // this._eyeBallY = data._eyeBallY * 3;
-      // console.log(this._roll, this._pitch, this._yaw);
+      this._eyeBallX = data.eyeBallX;
+      this._eyeBallY = data.eyeBallY;
 
     }
   }
