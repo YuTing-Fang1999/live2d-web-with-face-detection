@@ -479,7 +479,8 @@ export class LAppModel extends CubismUserModel {
   public update(): void {
     if (this._state != LoadStep.CompleteSetup) return;
 
-    const deltaTimeSeconds: number = LAppPal.getDeltaTime();
+    // const deltaTimeSeconds: number = LAppPal.getDeltaTime();
+    const deltaTimeSeconds: number = 0.001
     this._userTimeSeconds += deltaTimeSeconds;
 
     this._dragManager.update(deltaTimeSeconds);
@@ -503,7 +504,7 @@ export class LAppModel extends CubismUserModel {
     //   deltaTimeSeconds
     // ); // モーションを更新
     // }
-    this._model.saveParameters(); // 状態を保存
+    // this._model.saveParameters(); // 状態を保存
     //--------------------------------------------------------------------------
 
     // // まばたき
