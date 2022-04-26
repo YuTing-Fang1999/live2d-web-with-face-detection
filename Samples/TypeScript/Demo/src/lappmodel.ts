@@ -443,6 +443,8 @@ export class LAppModel extends CubismUserModel {
       this._eyeLOpen = data.eyeLOpen;
       this._eyeROpen = data.eyeROpen;
       this._mouthOpen = data.mouthOpen;
+      this._mouthForm = data.mouthForm;
+
       this._eyeBallX = data.eyeBallX;
       this._eyeBallY = data.eyeBallY;
 
@@ -540,6 +542,7 @@ export class LAppModel extends CubismUserModel {
 
     //mouth open close
     this._model.addParameterValueById(this._idParamMouthOpenY, this._mouthOpen); // -1から1の値を加える
+    this._model.addParameterValueById(this._idParamMouthForm, this._mouthForm); // -1から1の値を加える
 
 
     // 呼吸など
@@ -904,6 +907,10 @@ export class LAppModel extends CubismUserModel {
     this._idParamMouthOpenY = CubismFramework.getIdManager().getId(
       CubismDefaultParameterId.ParamMouthOpenY
     );
+    this._idParamMouthForm = CubismFramework.getIdManager().getId(
+      CubismDefaultParameterId.ParamMouthForm
+    );
+
 
     ////////////////////////
     this._roll = 0;
@@ -948,6 +955,7 @@ export class LAppModel extends CubismUserModel {
   _idParamEyeLOpen: CubismIdHandle; // パラメータID: ParamBodyEyeLOpen
   _idParamEyeROpen: CubismIdHandle; // パラメータID: ParamBodyEyeROpen
   _idParamMouthOpenY: CubismIdHandle;
+  _idParamMouthForm: CubismIdHandle;
   //////////////////////////////////////
   _roll: number;
   _pitch: number;
@@ -957,7 +965,7 @@ export class LAppModel extends CubismUserModel {
   _eyeLOpen: number;
   _eyeROpen: number;
   _mouthOpen: number;
-
+  _mouthForm: number;
   //////////////////////////////////////
 
   _state: number; // 現在のステータス管理用

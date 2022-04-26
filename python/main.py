@@ -185,11 +185,15 @@ def main():
             
             data = {
                 'roll': roll, 'pitch': pitch, 'yaw': yaw,
-                'eyeLOpen': ear_left*6 - 1.5,
-                'eyeROpen': ear_right*6 - 1.5,
-                'mouthOpen': mar,
-                'eyeBallX': -np.around(eyeBallX+0.5,1)*10,
-                'eyeBallY': threshold(eyeBallY,-0.55,-0.35),
+                'eyeLOpen': ear_left*6 - 2,
+                'eyeROpen': -1,
+                # 'eyeROpen': ear_right*6 - 2,
+                'mouthOpen': mar*1.5,
+                'mouthForm': threshold(mouth_distance,45,50) - 1, 
+                # 'mouthForm': -3, 
+                'eyeBallX': threshold(-eyeBallX,0.45,0.57),
+                # 'eyeBallY': threshold(eyeBallY,-0.55,-0.35),
+                'eyeBallY': 0,
             }
             # send info to web
             if args.connect:
@@ -203,8 +207,10 @@ def main():
                 send_info_to_web(socket,data)
 
             if args.debug:
-                if data['eyeBallY'] != 0:
-                    print(data['eyeBallY'])
+                # print(mouth_distance)
+                print(data['eyeROpen'])
+                # if data['eyeBallX'] != 0:
+                #     print(data['eyeBallX'])
                 pass
 
 
@@ -212,7 +218,7 @@ def main():
 
             # pose_estimator.draw_axis(img, pose[0], pose[1])
 
-            # pose_estimator.draw_axes(img_facemesh, steady_pose[0], steady_pose[1])
+            pose_estimator.draw_axes(img_facemesh, steady_pose[0], steady_pose[1])
 
         else:
             # reset our pose estimator
