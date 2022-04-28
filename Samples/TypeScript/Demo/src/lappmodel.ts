@@ -444,10 +444,10 @@ export class LAppModel extends CubismUserModel {
       this._roll = data.roll;
       this._pitch = data.pitch;
       this._yaw = data.yaw;
-      // this._eyeLOpen = data.eyeLOpen;
-      // this._eyeROpen = data.eyeROpen;
-      // this._mouthOpen = data.mouthOpen;
-      // this._mouthForm = data.mouthForm;
+      this._eyeLOpen = data.eyeLOpen;
+      this._eyeROpen = data.eyeROpen;
+      this._mouthOpen = data.mouthOpen;
+      this._mouthForm = data.mouthForm;
 
       this._eyeBallX = data.eyeBallX;
       this._eyeBallY = data.eyeBallY;
@@ -572,13 +572,13 @@ export class LAppModel extends CubismUserModel {
     this._model.addParameterValueById(this._idParamEyeBallX, this._eyeBallX); // -1から1の値を加える
     this._model.addParameterValueById(this._idParamEyeBallY, this._eyeBallY);
 
-    // //eye open close [-1, 1]
-    // this._model.addParameterValueById(this._idParamEyeLOpen, this._eyeROpen); // -1から1の値を加える
-    // this._model.addParameterValueById(this._idParamEyeROpen, this._eyeLOpen); // -1から1の値を加える
+    //eye open close [-1, 1]
+    this._model.addParameterValueById(this._idParamEyeLOpen, this._eyeROpen); // -1から1の値を加える
+    this._model.addParameterValueById(this._idParamEyeROpen, this._eyeLOpen); // -1から1の値を加える
 
-    // //mouth open close
-    // this._model.addParameterValueById(this._idParamMouthOpenY, this._mouthOpen); // -1から1の値を加える
-    // this._model.addParameterValueById(this._idParamMouthForm, this._mouthForm); // -1から1の値を加える
+    //mouth open close
+    this._model.addParameterValueById(this._idParamMouthOpenY, this._mouthOpen); // -1から1の値を加える
+    this._model.addParameterValueById(this._idParamMouthForm, this._mouthForm); // -1から1の値を加える
 
 
     // 呼吸など
@@ -955,6 +955,9 @@ export class LAppModel extends CubismUserModel {
     this._yaw = 0;
     this._eyeBallX = 0;
     this._eyeBallY = 0;
+    this._eyeLOpen = 1;
+    this._eyeROpen = 1;
+    this._mouthOpen = 0;
 
     this._nowStyle = 0; //start from 0
     this._totStyle = 1;
@@ -996,12 +999,17 @@ export class LAppModel extends CubismUserModel {
   _idParamEyeROpen: CubismIdHandle; // パラメータID: ParamBodyEyeROpen
   _idParamMouthOpenY: CubismIdHandle;
   _idParamMouthForm: CubismIdHandle;
+
   //////////////////////////////////////
   _roll: number;
   _pitch: number;
   _yaw: number;
   _eyeBallX: number;
   _eyeBallY: number;
+  _eyeLOpen: number;
+  _eyeROpen: number;
+  _mouthOpen: number;
+  _mouthForm: number;
 
   _nowStyle: number;
   _totStyle: number;
