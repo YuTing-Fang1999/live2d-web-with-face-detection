@@ -31,6 +31,7 @@ export class LAppSprite {
     this._rect = new Rect();
     this._rect.left = x - width * 0.5;
     this._rect.right = x + width * 0.5;
+    this._rect.oriRight = this._rect.right;
     this._rect.up = y + height * 0.5;
     this._rect.down = y - height * 0.5;
     this._texture = textureId;
@@ -53,10 +54,10 @@ export class LAppSprite {
    * 解放する。
    */
   public release(): void {
-    this._rect = null;
+    // this._rect = null;
 
-    gl.deleteTexture(this._texture);
-    this._texture = null;
+    // gl.deleteTexture(this._texture);
+    // this._texture = null;
 
     gl.deleteBuffer(this._uvBuffer);
     this._uvBuffer = null;
@@ -141,7 +142,7 @@ export class LAppSprite {
         this._indexBuffer = gl.createBuffer();
       }
 
-      this._firstDraw = false;
+      // this._firstDraw = false;
     }
 
     // UV座標登録
@@ -212,6 +213,7 @@ export class LAppSprite {
 export class Rect {
   public left: number; // 左辺
   public right: number; // 右辺
+  public oriRight: number; // 右辺
   public up: number; // 上辺
   public down: number; // 下辺
 }

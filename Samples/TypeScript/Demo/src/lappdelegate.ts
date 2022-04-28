@@ -104,6 +104,7 @@ export class LAppDelegate {
 
     // AppViewの初期化
     this._view.initialize();
+    this._view._viewMatrix.adjustTranslate(0, -0.52);
 
     // Cubism SDKの初期化
     this.initializeCubism();

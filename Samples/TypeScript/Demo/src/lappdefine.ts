@@ -15,7 +15,7 @@ import { LogLevel } from '@framework/live2dcubismframework';
 export const CanvasSize: { width: number; height: number } | 'auto' = 'auto';
 
 // 画面
-export const ViewScale = 1.0;
+export const ViewScale = 2.0;
 export const ViewMaxScale = 2.0;
 export const ViewMinScale = 0.8;
 
@@ -38,6 +38,8 @@ export const BackImageName = 'back_class_normal.png';
 // 歯車
 export const GearImageName = 'icon_gear.png';
 
+export const BarImageName = 'horizontal.png';
+
 // 終了ボタン
 export const PowerImageName = 'CloseNormal.png';
 
@@ -45,6 +47,7 @@ export const PowerImageName = 'CloseNormal.png';
 // モデルを配置したディレクトリ名の配列
 // ディレクトリ名とmodel3.jsonの名前を一致させておくこと
 export const ModelDir: string[] = ['Haru', 'Hiyori', 'Mark', 'Natori', 'Rice'];
+// export const ModelDir: string[] = ['Haru'];
 export const ModelDirSize: number = ModelDir.length;
 
 // 外部定義ファイル（json）と合わせる
@@ -69,5 +72,5 @@ export const DebugTouchLogEnable = false;
 export const CubismLoggingLevel: LogLevel = LogLevel.LogLevel_Verbose;
 
 // デフォルトのレンダーターゲットサイズ
-export const RenderTargetWidth = 1900;
-export const RenderTargetHeight = 1000;
+// export const RenderTargetWidth = 1000;
+// export const RenderTargetHeight = 500;

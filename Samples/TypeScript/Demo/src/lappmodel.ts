@@ -41,6 +41,7 @@ import { TextureInfo } from './lapptexturemanager';
 import { LAppWavFileHandler } from './lappwavfilehandler';
 
 import { io } from "socket.io-client";
+import { LAppView } from './lappview';
 
 enum LoadStep {
   LoadAssets,
@@ -385,10 +386,12 @@ export class LAppModel extends CubismUserModel {
     if (this._state == LoadStep.LoadTexture) {
       // テクスチャ読み込み用
       const textureCount: number = this._modelSetting.getTextureCount();
+      this._totStyle = textureCount/2;
 
+      // console.log(textureCount);
       for (
         let modelTextureNumber = 0;
-        modelTextureNumber < textureCount;
+        modelTextureNumber < (textureCount< 2 ? 1 : 2);
         modelTextureNumber++
       ) {
         // テクスチャ名が空文字だった場合はロード・バインド処理をスキップ
@@ -399,16 +402,17 @@ export class LAppModel extends CubismUserModel {
 
         // WebGLのテクスチャユニットにテクスチャをロードする
         let texturePath =
-          this._modelSetting.getTextureFileName(modelTextureNumber);
+          this._modelSetting.getTextureFileName(modelTextureNumber + this._nowStyle*2);
         texturePath = this._modelHomeDir + texturePath;
 
+        console.log(texturePath);
         // ロード完了時に呼び出すコールバック関数
         const onLoad = (textureInfo: TextureInfo): void => {
           this.getRenderer().bindTexture(modelTextureNumber, textureInfo.id);
 
           this._textureCount++;
 
-          if (this._textureCount >= textureCount) {
+          if (this._textureCount >= 2) {
             // ロード完了
             this._state = LoadStep.CompleteSetup;
           }
@@ -448,6 +452,33 @@ export class LAppModel extends CubismUserModel {
     }
   }
 
+  public nextStyle() {
+    this._nowStyle = (this._nowStyle+1) % this._totStyle;
+    console.log(this._nowStyle);
+    this._textureCount = 0;
+    this._state = LoadStep.LoadTexture;
+    this.setupTextures();
+    
+  }
+
+  public updatePregressBar(){
+    if(this._view._bar._rect.right - this._view._bar._rect.left > 0){
+      this._view._bar._rect.right -= 2; 
+    }
+    else {
+      this._view._bar._rect.right = this._view._bar._rect.oriRight;
+    }
+
+    this._view._bar.release();
+    gl.deleteProgram(this._view._programId2);
+    this._view._programId2 = LAppDelegate.getInstance().createShader();
+    gl.useProgram(this._view._programId2);
+    this._view._bar.render(this._view._programId2);
+    
+    // console.log(this._view._bar._rect.right);
+
+  }
+
   onSocketDisconnected() {
     console.log('[lappmodel] [onSocketDisconnected] disconnected!');
   }
@@ -456,16 +487,21 @@ export class LAppModel extends CubismUserModel {
     console.log('[lappmodel] [initSocketIO] Try to connect!');
     const socket = io('http://localhost:5252/', { transports : ['websocket'] });
     const onSocketDataRecvBind = this.onSocketDataRecv;
+    const onSocketDataRecvBind2 = this.nextStyle;
+    const onSocketDataRecvBind3 = this.updatePregressBar;
     onSocketDataRecvBind.bind(this);
+    onSocketDataRecvBind2.bind(this);
+    onSocketDataRecvBind3.bind(this);
 
     socket.on('connect', () => {
       console.log('[lappmodel] [initSocketIO] connected!');
     });
 
     //   test sever to client
-    // socket.on('date', function(data) {
-    //   console.log(data.date);
-    // });
+    socket.on('date', data => {
+      // this.nextStyle();
+      this.updatePregressBar();
+    });
 
     socket.on('jsClient', data => {
       this.onSocketDataRecv(data);
@@ -492,28 +528,28 @@ export class LAppModel extends CubismUserModel {
 
     //--------------------------------------------------------------------------
     this._model.loadParameters(); // 前回セーブされた状態をロード
-    // if (this._motionManager.isFinished()) {
-    //   // モーションの再生がない場合、待機モーションの中からランダムで再生する
-    //   this.startRandomMotion(
-    //     LAppDefine.MotionGroupIdle,
-    //     LAppDefine.PriorityIdle
-    //   );
-    // } else {
+    if (this._motionManager.isFinished()) {
+      // モーションの再生がない場合、待機モーションの中からランダムで再生する
+      this.startRandomMotion(
+        LAppDefine.MotionGroupIdle,
+        LAppDefine.PriorityIdle
+      );
+    } else {
       motionUpdated = this._motionManager.updateMotion(
         this._model,
         deltaTimeSeconds
       ); // モーションを更新
-    // }
+    }
     this._model.saveParameters(); // 状態を保存
     //--------------------------------------------------------------------------
 
-    // // まばたき
-    // if (!motionUpdated) {
-    //   if (this._eyeBlink != null) {
-    //     // メインモーションの更新がないとき
-    //     this._eyeBlink.updateParameters(this._model, deltaTimeSeconds); // 目パチ
-    //   }
-    // }
+    // まばたき
+    if (!motionUpdated) {
+      if (this._eyeBlink != null) {
+        // メインモーションの更新がないとき
+        this._eyeBlink.updateParameters(this._model, deltaTimeSeconds); // 目パチ
+      }
+    }
 
     if (this._expressionManager != null) {
       this._expressionManager.updateMotion(this._model, deltaTimeSeconds); // 表情でパラメータ更新（相対変化）
@@ -848,6 +884,7 @@ export class LAppModel extends CubismUserModel {
     }
   }
 
+
   /**
    * コンストラクタ
    */
@@ -892,6 +929,11 @@ export class LAppModel extends CubismUserModel {
     this._yaw = 0;
     this._eyeBallX = 0;
     this._eyeBallY = 0;
+
+    this._nowStyle = 0; //start from 0
+    this._totStyle = 1;
+
+    this._view = LAppDelegate.getInstance()._view;
     ////////////////////////
 
     this._state = LoadStep.LoadAssets;
@@ -902,6 +944,7 @@ export class LAppModel extends CubismUserModel {
     this._wavFileHandler = new LAppWavFileHandler();
 
     this.initSocketIO();
+    
   }
 
   _modelSetting: ICubismModelSetting; // モデルセッティング情報
@@ -931,6 +974,10 @@ export class LAppModel extends CubismUserModel {
   _eyeBallX: number;
   _eyeBallY: number;
 
+  _nowStyle: number;
+  _totStyle: number;
+
+  _view: LAppView; // View情報
   //////////////////////////////////////
 
   _state: number; // 現在のステータス管理用

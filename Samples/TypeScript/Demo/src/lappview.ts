@@ -16,6 +16,8 @@ import { LAppSprite } from './lappsprite';
 import { TextureInfo } from './lapptexturemanager';
 import { TouchManager } from './touchmanager';
 
+
+
 /**
  * 描画クラス。
  */
@@ -25,8 +27,10 @@ export class LAppView {
    */
   constructor() {
     this._programId = null;
+    this._programId2 = null;
     this._back = null;
     this._gear = null;
+    this._bar = null;
 
     // タッチ関係のイベント管理
     this._touchManager = new TouchManager();
@@ -74,6 +78,7 @@ export class LAppView {
       LAppDefine.ViewLogicalMaxBottom,
       LAppDefine.ViewLogicalMaxTop
     );
+
   }
 
   /**
@@ -87,11 +92,17 @@ export class LAppView {
     this._gear.release();
     this._gear = null;
 
+    this._bar.release();
+    this._bar = null;
+
     this._back.release();
     this._back = null;
 
     gl.deleteProgram(this._programId);
     this._programId = null;
+
+    gl.deleteProgram(this._programId2);
+    this._programId2 = null;
   }
 
   /**
@@ -105,6 +116,11 @@ export class LAppView {
     }
     if (this._gear) {
       this._gear.render(this._programId);
+    }
+
+    gl.useProgram(this._programId2);
+    if (this._bar) {
+      this._bar.render(this._programId2);
     }
 
     gl.flush();
@@ -163,9 +179,28 @@ export class LAppView {
       initGearTexture
     );
 
+    // 画像初期化
+    imageName = LAppDefine.BarImageName;
+    const initBarTexture = (textureInfo: TextureInfo): void => {
+      const x = width * 0.5;
+      const y = height - 30;
+      const fwidth = textureInfo.width;
+      const fheight = textureInfo.height * 0.5;
+      this._bar = new LAppSprite(x, y, fwidth, fheight, textureInfo.id);
+    };
+
+    textureManager.createTextureFromPngFile(
+      resourcesPath + imageName,
+      false,
+      initBarTexture
+    );
+
     // シェーダーを作成
     if (this._programId == null) {
       this._programId = LAppDelegate.getInstance().createShader();
+    }
+    if (this._programId2 == null) {
+      this._programId2 = LAppDelegate.getInstance().createShader();
     }
   }
 
@@ -222,6 +257,12 @@ export class LAppView {
 
       // 歯車にタップしたか
       if (this._gear.isHit(pointX, pointY)) {
+        // live2DManager.nextScene();
+        LAppLive2DManager.getInstance().getModel(0).nextStyle();
+      }
+
+      // 歯車にタップしたか
+      if (this._bar.isHit(pointX, pointY)) {
         live2DManager.nextScene();
       }
     }
@@ -268,8 +309,10 @@ export class LAppView {
   _deviceToScreen: CubismMatrix44; // デバイスからスクリーンへの行列
   _viewMatrix: CubismViewMatrix; // viewMatrix
   _programId: WebGLProgram; // シェーダID
+  _programId2: WebGLProgram; // シェーダID
   _back: LAppSprite; // 背景画像
   _gear: LAppSprite; // ギア画像
+  _bar: LAppSprite;
   _changeModel: boolean; // モデル切り替えフラグ
   _isClick: boolean; // クリック中
 }
