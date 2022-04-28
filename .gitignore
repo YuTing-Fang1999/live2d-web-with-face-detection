@@ -1,4 +1,5 @@
 Samples/TypeScript/Demo/node_modules
 Samples/TypeScript/Demo/dist
+python/__pycache__/
 .vscode
 .ipynb_checkpoints/

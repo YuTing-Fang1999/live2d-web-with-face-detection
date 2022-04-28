@@ -81,6 +81,7 @@ export class LAppView {
 
   }
 
+
   /**
    * 解放する
    */

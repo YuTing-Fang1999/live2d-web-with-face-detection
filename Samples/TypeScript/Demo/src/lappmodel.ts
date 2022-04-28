@@ -440,14 +440,17 @@ export class LAppModel extends CubismUserModel {
 
   onSocketDataRecv(data) {
     console.log('[lappmodel] [onSocketDataRecv] data: ', data);
-    console.log(data.pitch);
     if (data) {
-      this._roll = data.roll * 50;
-      this._pitch = data.pitch * 50;
-      this._yaw = data.yaw * 50;
-      this._eyeBallX = data._eyeBallX * 3;
-      this._eyeBallY = data._eyeBallY * 3;
-      console.log(this._roll, this._pitch, this._yaw);
+      this._roll = data.roll;
+      this._pitch = data.pitch;
+      this._yaw = data.yaw;
+      // this._eyeLOpen = data.eyeLOpen;
+      // this._eyeROpen = data.eyeROpen;
+      // this._mouthOpen = data.mouthOpen;
+      // this._mouthForm = data.mouthForm;
+
+      this._eyeBallX = data.eyeBallX;
+      this._eyeBallY = data.eyeBallY;
 
     }
   }
@@ -485,7 +488,7 @@ export class LAppModel extends CubismUserModel {
 
   initSocketIO() {
     console.log('[lappmodel] [initSocketIO] Try to connect!');
-    const socket = io('http://localhost:5252/', { transports : ['websocket'] });
+    const socket = io('http://localhost:5252/', { transports: ['websocket'] });
     const onSocketDataRecvBind = this.onSocketDataRecv;
     const onSocketDataRecvBind2 = this.nextStyle;
     const onSocketDataRecvBind3 = this.updatePregressBar;
@@ -516,7 +519,8 @@ export class LAppModel extends CubismUserModel {
   public update(): void {
     if (this._state != LoadStep.CompleteSetup) return;
 
-    const deltaTimeSeconds: number = LAppPal.getDeltaTime();
+    // const deltaTimeSeconds: number = LAppPal.getDeltaTime();
+    const deltaTimeSeconds: number = 0.001
     this._userTimeSeconds += deltaTimeSeconds;
 
     this._dragManager.update(deltaTimeSeconds);
@@ -556,10 +560,10 @@ export class LAppModel extends CubismUserModel {
     }
 
     // ドラッグによる変化
-    // ドラッグによる顔の向きの調整
-    this._model.addParameterValueById(this._idParamAngleX, this._roll); // -30から30の値を加える
-    this._model.addParameterValueById(this._idParamAngleY, this._pitch);
-    this._model.addParameterValueById(this._idParamAngleZ, this._yaw);
+    // ドラッグによる顔の向きの調整// -30から30の値を加える
+    this._model.addParameterValueById(this._idParamAngleX, this._yaw); //面左右 yaw
+    this._model.addParameterValueById(this._idParamAngleY, this._pitch); //上下 pitch
+    this._model.addParameterValueById(this._idParamAngleZ, this._roll); //倒左右 roll
 
     // ドラッグによる体の向きの調整
     this._model.addParameterValueById(this._idParamBodyAngleX, this._dragX * 10); // -10から10の値を加える
@@ -567,6 +571,15 @@ export class LAppModel extends CubismUserModel {
     // ドラッグによる目の向きの調整
     this._model.addParameterValueById(this._idParamEyeBallX, this._eyeBallX); // -1から1の値を加える
     this._model.addParameterValueById(this._idParamEyeBallY, this._eyeBallY);
+
+    // //eye open close [-1, 1]
+    // this._model.addParameterValueById(this._idParamEyeLOpen, this._eyeROpen); // -1から1の値を加える
+    // this._model.addParameterValueById(this._idParamEyeROpen, this._eyeLOpen); // -1から1の値を加える
+
+    // //mouth open close
+    // this._model.addParameterValueById(this._idParamMouthOpenY, this._mouthOpen); // -1から1の値を加える
+    // this._model.addParameterValueById(this._idParamMouthForm, this._mouthForm); // -1から1の値を加える
+
 
     // 呼吸など
     if (this._breath != null) {
@@ -922,6 +935,19 @@ export class LAppModel extends CubismUserModel {
     this._idParamBodyAngleX = CubismFramework.getIdManager().getId(
       CubismDefaultParameterId.ParamBodyAngleX
     );
+    this._idParamEyeLOpen = CubismFramework.getIdManager().getId(
+      CubismDefaultParameterId.ParamEyeLOpen
+    );
+    this._idParamEyeROpen = CubismFramework.getIdManager().getId(
+      CubismDefaultParameterId.ParamEyeROpen
+    );
+    this._idParamMouthOpenY = CubismFramework.getIdManager().getId(
+      CubismDefaultParameterId.ParamMouthOpenY
+    );
+    this._idParamMouthForm = CubismFramework.getIdManager().getId(
+      CubismDefaultParameterId.ParamMouthForm
+    );
+
 
     ////////////////////////
     this._roll = 0;
@@ -966,7 +992,10 @@ export class LAppModel extends CubismUserModel {
   _idParamEyeBallX: CubismIdHandle; // パラメータID: ParamEyeBallX
   _idParamEyeBallY: CubismIdHandle; // パラメータID: ParamEyeBAllY
   _idParamBodyAngleX: CubismIdHandle; // パラメータID: ParamBodyAngleX
-
+  _idParamEyeLOpen: CubismIdHandle; // パラメータID: ParamBodyEyeLOpen
+  _idParamEyeROpen: CubismIdHandle; // パラメータID: ParamBodyEyeROpen
+  _idParamMouthOpenY: CubismIdHandle;
+  _idParamMouthForm: CubismIdHandle;
   //////////////////////////////////////
   _roll: number;
   _pitch: number;
