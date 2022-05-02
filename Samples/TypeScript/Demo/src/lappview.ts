@@ -27,6 +27,8 @@ export class LAppView {
     this._programId = null;
     this._back = null;
     this._gear = null;
+    this._bar = null;
+
 
     // タッチ関係のイベント管理
     this._touchManager = new TouchManager();
@@ -75,8 +77,6 @@ export class LAppView {
       LAppDefine.ViewLogicalMaxTop
     );
 
-    this._viewMatrix.adjustTranslate(0, -0.52);
-
   }
 
 
@@ -90,6 +90,9 @@ export class LAppView {
 
     this._gear.release();
     this._gear = null;
+
+    this._bar.release();
+    this._bar = null;
 
     this._back.release();
     this._back = null;
@@ -107,8 +110,13 @@ export class LAppView {
     if (this._back) {
       this._back.render(this._programId);
     }
+
     if (this._gear) {
       this._gear.render(this._programId);
+    }
+
+    if (this._bar) {
+      this._bar.render(this._programId);
     }
 
     gl.flush();
@@ -118,6 +126,7 @@ export class LAppView {
     live2DManager.setViewMatrix(this._viewMatrix);
 
     live2DManager.onUpdate();
+
   }
 
   /**
@@ -165,6 +174,22 @@ export class LAppView {
       resourcesPath + imageName,
       false,
       initGearTexture
+    );
+
+    // 歯車画像初期化
+    imageName = LAppDefine.BarImageName;
+    const initBarTexture = (textureInfo: TextureInfo): void => {
+      const x = width - 30;
+      const y = height - 30;
+      const fwidth = 100;
+      const fheight = 10;
+      this._bar = new LAppSprite(x, y, fwidth, fheight, textureInfo.id);
+    };
+
+    textureManager.createTextureFromPngFile(
+      resourcesPath + imageName,
+      false,
+      initBarTexture
     );
 
     // シェーダーを作成
@@ -274,6 +299,7 @@ export class LAppView {
   _programId: WebGLProgram; // シェーダID
   _back: LAppSprite; // 背景画像
   _gear: LAppSprite; // ギア画像
+  _bar: LAppSprite; // bar画像
   _changeModel: boolean; // モデル切り替えフラグ
   _isClick: boolean; // クリック中
 }

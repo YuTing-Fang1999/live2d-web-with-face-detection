@@ -37,6 +37,8 @@ export const BackImageName = 'back_class_normal.png';
 
 // 歯車
 export const GearImageName = 'icon_gear.png';
+export const BarImageName = 'bar.png';
+
 
 // 終了ボタン
 export const PowerImageName = 'CloseNormal.png';

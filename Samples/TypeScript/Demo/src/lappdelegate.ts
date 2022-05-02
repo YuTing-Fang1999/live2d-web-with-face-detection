@@ -104,6 +104,7 @@ export class LAppDelegate {
 
     // AppViewの初期化
     this._view.initialize();
+    this._view._viewMatrix.adjustTranslate(0, -0.52);
 
     // Cubism SDKの初期化
     this.initializeCubism();
@@ -346,7 +347,7 @@ function onMouseMoved(e: MouseEvent): void {
 function onClickEnded(e: MouseEvent): void {
   // LAppDelegate.getInstance()._captured = false;
   LAppDelegate.getInstance()._captured = true; //
-  
+
   if (!LAppDelegate.getInstance()._view) {
     LAppPal.printMessage('view notfound');
     return;

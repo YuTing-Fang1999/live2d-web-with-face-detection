@@ -920,7 +920,11 @@ export class LAppModel extends CubismUserModel {
     this._eyeBallY = 0;
     this._eyeLOpen = 1;
     this._eyeROpen = 1;
-    this._mouthOpen = 0;
+    this._mouthOpen = 1;
+    this._mouthForm = 1;
+
+    this._totStyle = 1; // satrt from 1
+    this._nowStyle = 0; // start from 0
     ////////////////////////
 
     this._state = LoadStep.LoadAssets;
@@ -966,6 +970,9 @@ export class LAppModel extends CubismUserModel {
   _eyeROpen: number;
   _mouthOpen: number;
   _mouthForm: number;
+
+  _totStyle: number;
+  _nowStyle: number;
   //////////////////////////////////////
 
   _state: number; // 現在のステータス管理用
