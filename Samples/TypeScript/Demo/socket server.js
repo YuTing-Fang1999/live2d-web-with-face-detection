@@ -9,9 +9,10 @@ io.sockets.on('connection', (socket) => {
   console.log(`socket [${socket.id}] connected`);
 
   // test sever to client
-  // setInterval(function() {
-  //   socket.emit('date', {'date': new Date()});
-  // }, 1000);
+  setInterval(function() {
+    socket.emit('date', {'date': new Date()});
+    // console.log(`send`);
+  }, 10);
 
   socket.on('msg', (data) => {
     // console.log(`socket [${socket.id}] msg`, data);

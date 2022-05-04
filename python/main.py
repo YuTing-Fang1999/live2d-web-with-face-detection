@@ -186,7 +186,7 @@ def main():
             data = {
                 'roll': roll, 'pitch': pitch, 'yaw': yaw,
                 'eyeLOpen': ear_left*6 - 2,
-                'eyeROpen': -1,
+                'eyeROpen': ear_right*6 - 2,
                 # 'eyeROpen': ear_right*6 - 2,
                 'mouthOpen': mar*1.5,
                 'mouthForm': threshold(mouth_distance,45,50) - 1, 
@@ -208,7 +208,7 @@ def main():
 
             if args.debug:
                 # print(mouth_distance)
-                print(data['eyeROpen'])
+                # print(data['eyeLOpen'])
                 # if data['eyeBallX'] != 0:
                 #     print(data['eyeBallX'])
                 pass
