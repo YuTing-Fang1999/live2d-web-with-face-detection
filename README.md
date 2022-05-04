@@ -10,4 +10,10 @@ run js server.bat
 run js web.bat  
 run python.bat  
 
+### When it detects the wrong direction
+1. Turn your head to the upper right  
+2. Cover your face
+3. Dala~
+
+
 
