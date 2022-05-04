@@ -12,7 +12,7 @@ run python.bat
 
 ### When it detects the opposite direction
 1. Turn your head to the upper right  
-2. Cover your face
+2. Cover your face and then uncover
 3. Redetect Sucessfully
 
 
