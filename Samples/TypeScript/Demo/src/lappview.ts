@@ -42,7 +42,7 @@ export class LAppView {
     // 画面の表示の拡大縮小や移動の変換を行う行列
     this._viewMatrix = new CubismViewMatrix();
 
-    this.state = 0;
+    this.state = 4;
     this.socket_state = 4;
     this.transforming = false;
     this.tfmDuration = 10.0;
