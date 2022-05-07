@@ -489,7 +489,7 @@ export class LAppModel extends CubismUserModel {
     this.setupTextures();
   }
   
-  public changeStyle(styleIdx) {
+  public changeStyle(styleIdx: number) {
     this._nowStyle = styleIdx;
     this._textureCount = 0;
     this._state = LoadStep.LoadTexture;
