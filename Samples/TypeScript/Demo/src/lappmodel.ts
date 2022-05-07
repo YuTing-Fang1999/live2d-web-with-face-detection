@@ -487,7 +487,13 @@ export class LAppModel extends CubismUserModel {
     this._textureCount = 0;
     this._state = LoadStep.LoadTexture;
     this.setupTextures();
-
+  }
+  
+  public changeStyle(styleIdx) {
+    this._nowStyle = styleIdx;
+    this._textureCount = 0;
+    this._state = LoadStep.LoadTexture;
+    this.setupTextures();
   }
 
   public updatePregressBar(exp) {
