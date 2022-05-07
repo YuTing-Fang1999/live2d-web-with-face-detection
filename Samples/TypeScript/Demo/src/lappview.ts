@@ -9,7 +9,7 @@ import { CubismMatrix44 } from '@framework/math/cubismmatrix44';
 import { CubismViewMatrix } from '@framework/math/cubismviewmatrix';
 
 import * as LAppDefine from './lappdefine';
-import { canvas, gl, LAppDelegate } from './lappdelegate';
+import { canvas_gl, gl, LAppDelegate } from './lappdelegate';
 import { LAppLive2DManager } from './lapplive2dmanager';
 import { Expression } from './lappmodel';
 import { LAppPal } from './lapppal';
@@ -41,13 +41,23 @@ export class LAppView {
 
     // 画面の表示の拡大縮小や移動の変換を行う行列
     this._viewMatrix = new CubismViewMatrix();
+
+    this.state = 0;
+    this.socket_state = 4;
+    this.transforming = false;
+    this.tfmDuration = 10.0;
+    this.configs = this.setConfig();
+    this.cur_config = {};
+    Object.assign(this.cur_config, this.configs[this.state]);
+
+
   }
 
   /**
    * 初期化する。
    */
   public initialize(): void {
-    const { width, height } = canvas;
+    const { width, height } = canvas_gl;
 
     const ratio: number = width / height;
     const left: number = -ratio;
@@ -110,20 +120,20 @@ export class LAppView {
   /**
    * 描画する。
    */
-  public render(): void {
+  public render(config: Dict): void {
     gl.useProgram(this._programId);
 
     if (this._back) {
-      this._back.render(this._programId);
+      this._back.render(this._programId, config['bg_add_r'], config['bg_add_g'], config['bg_add_b']);
     }
 
     if (this._gear) {
-      this._gear.render(this._programId);
+      this._gear.render(this._programId, config['bg_add_r'], config['bg_add_g'], config['bg_add_b']);
     }
 
     gl.useProgram(this._programId2);
     if (this._bar) {
-      this._bar.render(this._programId2);
+      this._bar.render(this._programId2, 0.0, 0.0, 0.0);
     }
 
     gl.flush();
@@ -132,16 +142,16 @@ export class LAppView {
 
     live2DManager.setViewMatrix(this._viewMatrix);
 
-    live2DManager.onUpdate();
-
+    // live2DManager.onUpdate();
+    live2DManager.onUpdate(config['model_r'], config['model_g'], config['model_b'], 1.0);
   }
 
   /**
    * 画像の初期化を行う。
    */
   public initializeSprite(): void {
-    const width: number = canvas.width;
-    const height: number = canvas.height;
+    const width: number = canvas_gl.width;
+    const height: number = canvas_gl.height;
 
     const textureManager = LAppDelegate.getInstance().getTextureManager();
     const resourcesPath = LAppDefine.ResourcesPath;
@@ -201,13 +211,144 @@ export class LAppView {
 
     // シェーダーを作成
     if (this._programId == null) {
-      this._programId = LAppDelegate.getInstance().createShader();
+      // this._programId = LAppDelegate.getInstance().createShader();
+      this._programId = this.createShader();
     }
     if (this._programId2 == null) {
-      this._programId2 = LAppDelegate.getInstance().createShader();
+      // this._programId2 = LAppDelegate.getInstance().createShader();
+      this._programId2 = this.createShader();
     }
   }
+  public createShader(): WebGLProgram {
 
+    // バーテックスシェーダーのコンパイル
+    const vertexShaderId = gl.createShader(gl.VERTEX_SHADER);
+
+    if (vertexShaderId == null) {
+      LAppPal.printMessage('failed to create vertexShader');
+      return null;
+    }
+
+    const vertexShader: string =
+      'precision mediump float;' +
+      'attribute vec3 position;' +
+      'attribute vec2 uv;' +
+      'varying vec2 vuv;' +
+      'void main(void)' +
+      '{' +
+      '   gl_Position = vec4(position, 1.0);' +
+      '   vuv = uv;' +
+      '}';
+
+    gl.shaderSource(vertexShaderId, vertexShader);
+    gl.compileShader(vertexShaderId);
+
+    // フラグメントシェーダのコンパイル
+    const fragmentShaderId = gl.createShader(gl.FRAGMENT_SHADER);
+
+    if (fragmentShaderId == null) {
+      LAppPal.printMessage('failed to create fragmentShader');
+      return null;
+    }
+
+    const fragmentShader: string =
+      'precision mediump float;' +
+      'varying vec2 vuv;' +
+      'uniform sampler2D texture;' +
+      'uniform vec3 intensity;' +
+      'void main(void)' +
+      '{' +
+      '   vec4 texel = texture2D(texture, vuv);' +
+      '   vec3 color = texel.rgb;' +
+      '   color = color + intensity;' +
+      '   gl_FragColor = vec4(color, texel.a);' +
+      '}';
+    
+    
+      
+    gl.shaderSource(fragmentShaderId, fragmentShader);
+    gl.compileShader(fragmentShaderId);
+
+    // プログラムオブジェクトの作成
+    const programId = gl.createProgram();
+    gl.attachShader(programId, vertexShaderId);
+    gl.attachShader(programId, fragmentShaderId);
+
+    gl.deleteShader(vertexShaderId);
+    gl.deleteShader(fragmentShaderId);
+
+    // リンク
+    gl.linkProgram(programId);
+
+    gl.useProgram(programId);
+
+    return programId;
+  }
+
+  public setConfig(): Dict[]{
+
+    
+    const config = [
+      
+      // cold
+      {
+        "bg_add_r":-0.3,
+        "bg_add_g":-0.3,
+        "bg_add_b":0.2,
+        "model_r": 0.5,
+        "model_g": 0.5,
+        "model_b": 0.8,
+        "contrast": 0.8,
+      },
+      // warm
+      {
+        "bg_add_r": 0.2,
+        "bg_add_g":-0.3,
+        "bg_add_b":-0.3,
+        "model_r": 0.8,
+        "model_g": 0.5,
+        "model_b": 0.5,
+        "contrast": 0.8,
+      },
+
+      // green
+      {
+        "bg_add_r":-0.3,
+        "bg_add_g": 0.2,
+        "bg_add_b":-0.3,
+        "model_r": 0.5,
+        "model_g": 0.8,
+        "model_b": 0.5,
+        "contrast": 0.8,
+      },
+      // grey
+      {
+        "bg_add_r":-0.3,
+        "bg_add_g":-0.3,
+        "bg_add_b":-0.3,
+        "model_r": 0.5,
+        "model_g": 0.5,
+        "model_b": 0.5,
+        "contrast": 0.5,
+      },
+
+      // normal
+      {
+        "bg_add_r":0.0,
+        "bg_add_g":0.0,
+        "bg_add_b":0.0,
+        "model_r": 1.0,
+        "model_g": 1.0,
+        "model_b": 1.0,
+        "contrast": 1.0,
+      },
+    ];
+    
+    return config;
+
+    // return result;
+
+  }
   /**
    * タッチされた時に呼ばれる。
    *
@@ -320,4 +461,14 @@ export class LAppView {
   _bar: LAppSprite;
   _changeModel: boolean; // モデル切り替えフラグ
   _isClick: boolean; // クリック中
+  state: number;
+  next_state: number;
+  socket_state:number;
+  transforming: boolean;
+  tfmDuration: number;
+  cur_config: Dict;
+  configs: Dict[];
+}
+interface Dict {
+  [idx: string]: number
 }

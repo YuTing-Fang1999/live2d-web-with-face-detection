@@ -39,9 +39,9 @@ def print_debug_msg(data):
     print(data)
 
 def threshold(v, L, H):
-    if L<=v and v<=H: return 0;
-    if H<v : return 1;
-    if v<L : return -1;
+    if L<=v and v<=H: return 0
+    if H<v : return 1
+    if v<L : return -1
 
 def main():
 
