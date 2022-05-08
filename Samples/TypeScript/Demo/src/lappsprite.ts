@@ -5,7 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { canvas, gl } from './lappdelegate';
+import { canvas_gl, gl } from './lappdelegate';
 
 /**
  * スプライトを実装するクラス
@@ -42,6 +42,7 @@ export class LAppSprite {
     this._positionLocation = null;
     this._uvLocation = null;
     this._textureLocation = null;
+    this._intensityLocation = null;
 
     this._positionArray = null;
     this._uvArray = null;
@@ -81,7 +82,7 @@ export class LAppSprite {
    * @param programId シェーダープログラム
    * @param canvas 描画するキャンパス情報
    */
-  public render(programId: WebGLProgram): void {
+  public render(programId: WebGLProgram, r:number, g:number, b:number): void {
     if (this._texture == null) {
       // ロードが完了していない
       return;
@@ -102,6 +103,10 @@ export class LAppSprite {
       // uniform属性の登録
       gl.uniform1i(this._textureLocation, 0);
 
+      this._intensityLocation = gl.getUniformLocation(programId, 'intensity');
+      gl.uniform3fv(this._intensityLocation, [r, g, b]);
+
+
       // uvバッファ、座標初期化
       {
         this._uvArray = new Float32Array([
@@ -114,8 +119,8 @@ export class LAppSprite {
 
       // 頂点バッファ、座標初期化
       {
-        const maxWidth = canvas.width;
-        const maxHeight = canvas.height;
+        const maxWidth = canvas_gl.width;
+        const maxHeight = canvas_gl.height;
 
         // 頂点データ
         this._positionArray = new Float32Array([
@@ -180,7 +185,7 @@ export class LAppSprite {
    */
   public isHit(pointX: number, pointY: number): boolean {
     // 画面サイズを取得する。
-    const { height } = canvas;
+    const { height } = canvas_gl;
 
     // Y座標は変換する必要あり
     const y = height - pointY;
@@ -202,6 +207,7 @@ export class LAppSprite {
   _positionLocation: number;
   _uvLocation: number;
   _textureLocation: WebGLUniformLocation;
+  _intensityLocation: WebGLUniformLocation;
 
   _positionArray: Float32Array;
   _uvArray: Float32Array;

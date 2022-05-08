@@ -12,8 +12,10 @@ import { LAppLive2DManager } from './lapplive2dmanager';
 import { LAppPal } from './lapppal';
 import { LAppTextureManager } from './lapptexturemanager';
 import { LAppView } from './lappview';
-
-export let canvas: HTMLCanvasElement = null;
+import { Expression } from './lappmodel';
+export let canvas_gl: HTMLCanvasElement = null;
+export let canvas_2d: HTMLCanvasElement = null;
+export let ctx: CanvasRenderingContext2D = null;
 export let s_instance: LAppDelegate = null;
 export let gl: WebGLRenderingContext = null;
 export let frameBuffer: WebGLFramebuffer = null;
@@ -53,17 +55,23 @@ export class LAppDelegate {
    */
   public initialize(): boolean {
     // キャンバスの作成
-    canvas = document.createElement('canvas');
+    canvas_gl = document.createElement('canvas');
+    canvas_2d = document.createElement('canvas');
     if (LAppDefine.CanvasSize === 'auto') {
       this._resizeCanvas();
     } else {
-      canvas.width = LAppDefine.CanvasSize.width;
-      canvas.height = LAppDefine.CanvasSize.height;
+      canvas_gl.width = LAppDefine.CanvasSize.width;
+      canvas_gl.height = LAppDefine.CanvasSize.height;
     }
+
+    canvas_2d.width = 1900; // 300
+    canvas_2d.height = 698; // 200
+    ctx = canvas_2d.getContext("2d");
+
 
     // glコンテキストを初期化
     // @ts-ignore
-    gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    gl = canvas_gl.getContext('webgl') || canvas_gl.getContext('experimental-webgl');
 
     if (!gl) {
       alert('Cannot initialize WebGL. This browser does not support.');
@@ -77,8 +85,8 @@ export class LAppDelegate {
     }
 
     // キャンバスを DOM に追加
-    document.body.appendChild(canvas);
-
+    // document.body.appendChild(canvas_gl);
+    document.body.appendChild(canvas_2d);
     if (!frameBuffer) {
       frameBuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
     }
@@ -87,19 +95,29 @@ export class LAppDelegate {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    const supportTouch: boolean = 'ontouchend' in canvas;
+    const supportTouch: boolean = 'ontouchend' in canvas_gl;
 
     if (supportTouch) {
       // タッチ関連コールバック関数登録
-      canvas.ontouchstart = onTouchBegan;
-      canvas.ontouchmove = onTouchMoved;
-      canvas.ontouchend = onTouchEnded;
-      canvas.ontouchcancel = onTouchCancel;
+      canvas_gl.ontouchstart = onTouchBegan;
+      canvas_gl.ontouchmove = onTouchMoved;
+      canvas_gl.ontouchend = onTouchEnded;
+      canvas_gl.ontouchcancel = onTouchCancel;
+
+      canvas_2d.ontouchstart = onTouchBegan;
+      canvas_2d.ontouchmove = onTouchMoved;
+      canvas_2d.ontouchend = onTouchEnded;
+      canvas_2d.ontouchcancel = onTouchCancel;
+
     } else {
       // マウス関連コールバック関数登録
-      canvas.onmousedown = onClickBegan;
-      canvas.onmousemove = onMouseMoved;
-      canvas.onmouseup = onClickEnded;
+      canvas_gl.onmousedown = onClickBegan;
+      canvas_gl.onmousemove = onMouseMoved;
+      canvas_gl.onmouseup = onClickEnded;
+
+      canvas_2d.onmousedown = onClickBegan;
+      canvas_2d.onmousemove = onMouseMoved;
+      canvas_2d.onmouseup = onClickEnded;
     }
 
     // AppViewの初期化
@@ -171,7 +189,63 @@ export class LAppDelegate {
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
       // 描画更新
-      this._view.render();
+      // this._view.render();
+      
+
+      if(!this._view.transforming){
+        this._view.next_state = this._view.socket_state;
+      }
+
+      var state = this._view.state;
+      var next_state = this._view.next_state;
+      var cur_config = this._view.cur_config;
+      console.log(state, next_state);
+      if(state != next_state){
+        
+        this._view.transforming = true;
+        const prev_config = this._view.configs[state];
+        const next_config = this._view.configs[next_state];
+        
+        var Duration = this._view.tfmDuration;
+        var diff = {};
+        
+        for(const [key, val] of Object.entries(prev_config))
+                diff[key] = (next_config[key]-prev_config[key]) / Duration;
+
+        for(const [key, val] of Object.entries(diff)){
+
+          cur_config[key] = cur_config[key] + diff[key];
+          if(diff[key]>0) cur_config[key] = Math.min(cur_config[key], next_config[key]);
+          if(diff[key]<0) cur_config[key] = Math.max(cur_config[key], next_config[key]);
+          
+                
+        }
+
+        var change = false;
+
+        for(const [key, val] of Object.entries(cur_config)){
+          if(Math.round(cur_config[key]*10000-next_config[key]*10000)!=0) change = true;
+        }
+        
+        if(!change){
+          console.log("transformation done.");
+          this._view.state = next_state;
+          this._view.transforming = false;
+          LAppLive2DManager.getInstance().getModel(0).changeStyle(this._view.state);
+          LAppLive2DManager.getInstance().getModel(0)._exp = Expression.None;
+        }
+        else  console.log("transformation not done.");
+        // console.log(LAppLive2DManager.getInstance().getModel(0)._exp);
+
+      }
+      // this._view.tfmDuration
+      this._view.render(cur_config);
+      ctx.drawImage(gl.canvas, 0, 0);
+
+      
+      // ループのために再帰呼び出し
+      var filter_str = 'contrast(' + cur_config['contrast'].toString() + ')';
+      ctx.filter = filter_str;
 
       // ループのために再帰呼び出し
       requestAnimationFrame(loop);
@@ -182,64 +256,7 @@ export class LAppDelegate {
   /**
    * シェーダーを登録する。
    */
-  public createShader(): WebGLProgram {
-    // バーテックスシェーダーのコンパイル
-    const vertexShaderId = gl.createShader(gl.VERTEX_SHADER);
-
-    if (vertexShaderId == null) {
-      LAppPal.printMessage('failed to create vertexShader');
-      return null;
-    }
-
-    const vertexShader: string =
-      'precision mediump float;' +
-      'attribute vec3 position;' +
-      'attribute vec2 uv;' +
-      'varying vec2 vuv;' +
-      'void main(void)' +
-      '{' +
-      '   gl_Position = vec4(position, 1.0);' +
-      '   vuv = uv;' +
-      '}';
-
-    gl.shaderSource(vertexShaderId, vertexShader);
-    gl.compileShader(vertexShaderId);
-
-    // フラグメントシェーダのコンパイル
-    const fragmentShaderId = gl.createShader(gl.FRAGMENT_SHADER);
-
-    if (fragmentShaderId == null) {
-      LAppPal.printMessage('failed to create fragmentShader');
-      return null;
-    }
-
-    const fragmentShader: string =
-      'precision mediump float;' +
-      'varying vec2 vuv;' +
-      'uniform sampler2D texture;' +
-      'void main(void)' +
-      '{' +
-      '   gl_FragColor = texture2D(texture, vuv);' +
-      '}';
-
-    gl.shaderSource(fragmentShaderId, fragmentShader);
-    gl.compileShader(fragmentShaderId);
-
-    // プログラムオブジェクトの作成
-    const programId = gl.createProgram();
-    gl.attachShader(programId, vertexShaderId);
-    gl.attachShader(programId, fragmentShaderId);
-
-    gl.deleteShader(vertexShaderId);
-    gl.deleteShader(fragmentShaderId);
-
-    // リンク
-    gl.linkProgram(programId);
-
-    gl.useProgram(programId);
-
-    return programId;
-  }
+  
 
   /**
    * View情報を取得する。
@@ -290,8 +307,8 @@ export class LAppDelegate {
    * Resize the canvas to fill the screen.
    */
   private _resizeCanvas(): void {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas_gl.width = window.innerWidth;
+    canvas_gl.height = window.innerHeight;
   }
 
   _cubismOption: Option; // Cubism SDK Option
@@ -434,4 +451,7 @@ function onTouchCancel(e: TouchEvent): void {
   const posY = e.changedTouches[0].clientY - rect.top;
 
   LAppDelegate.getInstance()._view.onTouchesEnded(posX, posY);
+}
+interface Dict {
+  [idx: string]: number
 }

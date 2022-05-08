@@ -35,7 +35,7 @@ import { csmVector } from '@framework/type/csmvector';
 import { CubismLogInfo } from '@framework/utils/cubismdebug';
 
 import * as LAppDefine from './lappdefine';
-import { canvas, frameBuffer, gl, LAppDelegate } from './lappdelegate';
+import { canvas_gl, frameBuffer, gl, LAppDelegate } from './lappdelegate';
 import { LAppPal } from './lapppal';
 import { TextureInfo } from './lapptexturemanager';
 import { LAppWavFileHandler } from './lappwavfilehandler';
@@ -459,8 +459,8 @@ export class LAppModel extends CubismUserModel {
 
       this._eyeBallX = data.eyeBallX;
       this._eyeBallY = data.eyeBallY;
-
-      if (this._exp == Expression.None) {
+      // console.log(this._exp);
+      if (this._exp == Expression.None || true) {
         if (this._mouthForm == 0 && this._mouthOpen > 0.7) {
           this.updatePregressBar(Expression.Happy);
         }
@@ -511,15 +511,16 @@ export class LAppModel extends CubismUserModel {
       if (this._view._bar._rect.right - this._view._bar._rect.left <= 0) {
         this._view._bar._rect.right = this._view._bar._rect.oriRight;
         this._exp = exp;
-        alert(this._exp);
+        this._view.socket_state = this._exp;
+        // alert(this._exp);
       }
     }
 
     this._view._bar.release();
     gl.deleteProgram(this._view._programId2);
-    this._view._programId2 = LAppDelegate.getInstance().createShader();
+    this._view._programId2 = this._view.createShader();
     gl.useProgram(this._view._programId2);
-    this._view._bar.render(this._view._programId2);
+    this._view._bar.render(this._view._programId2, 0.0, 0.0, 0.0);
 
   }
 
@@ -914,7 +915,7 @@ export class LAppModel extends CubismUserModel {
     if (this._model == null) return;
 
     // キャンバスサイズを渡す
-    const viewport: number[] = [0, 0, canvas.width, canvas.height];
+    const viewport: number[] = [0, 0, canvas_gl.width, canvas_gl.height];
 
     this.getRenderer().setRenderState(frameBuffer, viewport);
     this.getRenderer().drawModel();
@@ -923,7 +924,7 @@ export class LAppModel extends CubismUserModel {
   /**
    * モデルを描画する処理。モデルを描画する空間のView-Projection行列を渡す。
    */
-  public draw(matrix: CubismMatrix44): void {
+  public draw(matrix: CubismMatrix44, r: number, g: number, b: number, a: number): void {
     if (this._model == null) {
       return;
     }
@@ -933,7 +934,7 @@ export class LAppModel extends CubismUserModel {
       matrix.multiplyByMatrix(this._modelMatrix);
 
       this.getRenderer().setMvpMatrix(matrix);
-
+      this.getRenderer().setModelColor(r, g, b, a);
       this.doDraw();
     }
   }

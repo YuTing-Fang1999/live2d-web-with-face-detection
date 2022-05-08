@@ -10,7 +10,7 @@ import { ACubismMotion } from '@framework/motion/acubismmotion';
 import { csmVector } from '@framework/type/csmvector';
 
 import * as LAppDefine from './lappdefine';
-import { canvas } from './lappdelegate';
+import { canvas_gl } from './lappdelegate';
 import { LAppModel } from './lappmodel';
 import { LAppPal } from './lapppal';
 
@@ -79,6 +79,7 @@ export class LAppLive2DManager {
    * @param y 画面のY座標
    */
   public onDrag(x: number, y: number): void {
+
     for (let i = 0; i < this._models.getSize(); i++) {
       const model: LAppModel = this.getModel(i);
 
@@ -130,8 +131,8 @@ export class LAppLive2DManager {
    * 画面を更新するときの処理
    * モデルの更新処理及び描画処理を行う
    */
-  public onUpdate(): void {
-    const { width, height } = canvas;
+  public onUpdate(r:number, g:number, b:number, a:number): void {
+    const { width, height } = canvas_gl;
 
     const modelCount: number = this._models.getSize();
 
@@ -155,7 +156,7 @@ export class LAppLive2DManager {
       }
 
       model.update();
-      model.draw(projection); // 参照渡しなのでprojectionは変質する。
+      model.draw(projection, r, g, b, a); // 参照渡しなのでprojectionは変質する。
     }
   }
 
