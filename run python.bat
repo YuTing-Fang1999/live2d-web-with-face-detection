@@ -1,2 +1,2 @@
 cd .\python\
-python .\main.py --connect --debug
+python .\main.py --connect 

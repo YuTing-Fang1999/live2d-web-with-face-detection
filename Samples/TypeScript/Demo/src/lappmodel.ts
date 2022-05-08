@@ -66,7 +66,7 @@ enum LoadStep {
   CompleteSetupModel,
   LoadTexture,
   WaitLoadTexture,
-  CompleteSetup
+  CompleteSetup,
 }
 
 export enum Expression {
@@ -483,11 +483,16 @@ export class LAppModel extends CubismUserModel {
 
   public nextStyle() {
     this._nowStyle = (this._nowStyle + 1) % this._totStyle;
-    console.log(this._nowStyle);
     this._textureCount = 0;
     this._state = LoadStep.LoadTexture;
     this.setupTextures();
+  }
 
+  public changeStyle(styleNumber) {
+    this._nowStyle = styleNumber;
+    this._textureCount = 0;
+    this._state = LoadStep.LoadTexture;
+    this.setupTextures();
   }
 
   public updatePregressBar(exp) {
@@ -516,8 +521,6 @@ export class LAppModel extends CubismUserModel {
     gl.useProgram(this._view._programId2);
     this._view._bar.render(this._view._programId2);
 
-    // console.log(this._view._bar._rect.right);
-
   }
 
   onSocketDisconnected() {
@@ -539,10 +542,10 @@ export class LAppModel extends CubismUserModel {
     });
 
     //   test sever to client
-    socket.on('date', data => {
-      // this.nextStyle();
-      // this.updatePregressBar();
-    });
+    // socket.on('date', data => {
+    //   // this.nextStyle();
+    //   // this.updatePregressBar();
+    // });
 
     socket.on('jsClient', data => {
       this.onSocketDataRecv(data);
@@ -558,7 +561,7 @@ export class LAppModel extends CubismUserModel {
     if (this._state != LoadStep.CompleteSetup) return;
 
     // const deltaTimeSeconds: number = LAppPal.getDeltaTime();
-    const deltaTimeSeconds: number = 0.001
+    const deltaTimeSeconds: number = 0.0001
     // this._userTimeSeconds += deltaTimeSeconds;
 
     // this._dragManager.update(deltaTimeSeconds);
@@ -570,12 +573,12 @@ export class LAppModel extends CubismUserModel {
 
     //--------------------------------------------------------------------------
     this._model.loadParameters(); // 前回セーブされた状態をロード
-    // if (this._motionManager.isFinished()) {
-    //   // モーションの再生がない場合、待機モーションの中からランダムで再生する
-    //   this.startRandomMotion(
-    //     LAppDefine.MotionGroupIdle,
-    //     LAppDefine.PriorityIdle
-    //   );
+    // if (this._state == LoadStep.CompleteSetup) {
+    // モーションの再生がない場合、待機モーションの中からランダムで再生する
+    // this.startRandomMotion(
+    //   LAppDefine.MotionGroupIdle,
+    //   LAppDefine.PriorityIdle
+    // );
     // } else {
     //   motionUpdated = this._motionManager.updateMotion(
     //     this._model,
