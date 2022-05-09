@@ -190,51 +190,51 @@ export class LAppDelegate {
 
       // 描画更新
       // this._view.render();
-      
 
-      if(!this._view.transforming){
+
+      if (!this._view.transforming) {
         this._view.next_state = this._view.socket_state;
       }
 
       var state = this._view.state;
       var next_state = this._view.next_state;
       var cur_config = this._view.cur_config;
-      console.log(state, next_state);
-      if(state != next_state){
-        
+      // console.log(state, next_state);
+      if (state != next_state) {
+
         this._view.transforming = true;
         const prev_config = this._view.configs[state];
         const next_config = this._view.configs[next_state];
-        
+
         var Duration = this._view.tfmDuration;
         var diff = {};
-        
-        for(const [key, val] of Object.entries(prev_config))
-                diff[key] = (next_config[key]-prev_config[key]) / Duration;
 
-        for(const [key, val] of Object.entries(diff)){
+        for (const [key, val] of Object.entries(prev_config))
+          diff[key] = (next_config[key] - prev_config[key]) / Duration;
+
+        for (const [key, val] of Object.entries(diff)) {
 
           cur_config[key] = cur_config[key] + diff[key];
-          if(diff[key]>0) cur_config[key] = Math.min(cur_config[key], next_config[key]);
-          if(diff[key]<0) cur_config[key] = Math.max(cur_config[key], next_config[key]);
-          
-                
+          if (diff[key] > 0) cur_config[key] = Math.min(cur_config[key], next_config[key]);
+          if (diff[key] < 0) cur_config[key] = Math.max(cur_config[key], next_config[key]);
+
+
         }
 
         var change = false;
 
-        for(const [key, val] of Object.entries(cur_config)){
-          if(Math.round(cur_config[key]*10000-next_config[key]*10000)!=0) change = true;
+        for (const [key, val] of Object.entries(cur_config)) {
+          if (Math.round(cur_config[key] * 10000 - next_config[key] * 10000) != 0) change = true;
         }
-        
-        if(!change){
+
+        if (!change) {
           console.log("transformation done.");
           this._view.state = next_state;
           this._view.transforming = false;
           LAppLive2DManager.getInstance().getModel(0).changeStyle(this._view.state);
           LAppLive2DManager.getInstance().getModel(0)._exp = Expression.None;
         }
-        else  console.log("transformation not done.");
+        else console.log("transformation not done.");
         // console.log(LAppLive2DManager.getInstance().getModel(0)._exp);
 
       }
@@ -242,7 +242,7 @@ export class LAppDelegate {
       this._view.render(cur_config);
       ctx.drawImage(gl.canvas, 0, 0);
 
-      
+
       // ループのために再帰呼び出し
       var filter_str = 'contrast(' + cur_config['contrast'].toString() + ')';
       ctx.filter = filter_str;
@@ -256,7 +256,7 @@ export class LAppDelegate {
   /**
    * シェーダーを登録する。
    */
-  
+
 
   /**
    * View情報を取得する。

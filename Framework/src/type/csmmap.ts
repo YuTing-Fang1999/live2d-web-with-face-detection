@@ -78,7 +78,7 @@ export class csmMap<_KeyT, _ValT> {
    */
   public getValue(key: _KeyT): _ValT {
     let found = -1;
-
+    // console.log(this._size);  //10
     for (let i = 0; i < this._size; i++) {
       if (this._keyValues[i].first == key) {
         found = i;

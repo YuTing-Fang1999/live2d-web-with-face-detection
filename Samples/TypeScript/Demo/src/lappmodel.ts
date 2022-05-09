@@ -384,6 +384,31 @@ export class LAppModel extends CubismUserModel {
     };
   }
 
+  public changeStyle(styleNumber) {
+    for (
+      let modelTextureNumber = 0;
+      modelTextureNumber < 2;
+      modelTextureNumber++
+    ) {
+
+      // WebGLのテクスチャユニットにテクスチャをロードする
+      let texturePath =
+        this._modelSetting.getTextureFileName(modelTextureNumber + styleNumber * 2);
+      texturePath = this._modelHomeDir + texturePath;
+
+      console.log(texturePath);
+      // ロード完了時に呼び出すコールバック関数
+      const onLoad = (textureInfo: TextureInfo): void => {
+        this.getRenderer().bindTexture(modelTextureNumber, textureInfo.id);
+      };
+
+      // 読み込み
+      LAppDelegate.getInstance()
+        .getTextureManager()
+        .getTextureInfo(texturePath, onLoad);
+    }
+  }
+
   /**
    * テクスチャユニットにテクスチャをロードする
    */
@@ -399,7 +424,7 @@ export class LAppModel extends CubismUserModel {
       // console.log(textureCount);
       for (
         let modelTextureNumber = 0;
-        modelTextureNumber < (textureCount < 2 ? 1 : 2);
+        modelTextureNumber < textureCount;
         modelTextureNumber++
       ) {
         // テクスチャ名が空文字だった場合はロード・バインド処理をスキップ
@@ -410,7 +435,7 @@ export class LAppModel extends CubismUserModel {
 
         // WebGLのテクスチャユニットにテクスチャをロードする
         let texturePath =
-          this._modelSetting.getTextureFileName(modelTextureNumber + this._nowStyle * 2);
+          this._modelSetting.getTextureFileName(modelTextureNumber);
         texturePath = this._modelHomeDir + texturePath;
 
         console.log(texturePath);
@@ -424,6 +449,7 @@ export class LAppModel extends CubismUserModel {
             // ロード完了
             this._state = LoadStep.CompleteSetup;
           }
+          console.log('load texture', modelTextureNumber, 'done');
         };
 
         // 読み込み
@@ -483,16 +509,7 @@ export class LAppModel extends CubismUserModel {
 
   public nextStyle() {
     this._nowStyle = (this._nowStyle + 1) % this._totStyle;
-    this._textureCount = 0;
-    this._state = LoadStep.LoadTexture;
-    this.setupTextures();
-  }
-
-  public changeStyle(styleNumber) {
-    this._nowStyle = styleNumber;
-    this._textureCount = 0;
-    this._state = LoadStep.LoadTexture;
-    this.setupTextures();
+    this.changeStyle(this._nowStyle);
   }
 
   public updatePregressBar(exp) {

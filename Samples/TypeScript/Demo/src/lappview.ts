@@ -263,9 +263,9 @@ export class LAppView {
       '   color = color + intensity;' +
       '   gl_FragColor = vec4(color, texel.a);' +
       '}';
-    
-    
-      
+
+
+
     gl.shaderSource(fragmentShaderId, fragmentShader);
     gl.compileShader(fragmentShaderId);
 
@@ -285,16 +285,16 @@ export class LAppView {
     return programId;
   }
 
-  public setConfig(): Dict[]{
+  public setConfig(): Dict[] {
 
-    
+
     const config = [
-      
+
       // cold
       {
-        "bg_add_r":-0.3,
-        "bg_add_g":-0.3,
-        "bg_add_b":0.2,
+        "bg_add_r": -0.3,
+        "bg_add_g": -0.3,
+        "bg_add_b": 0.2,
         "model_r": 0.5,
         "model_g": 0.5,
         "model_b": 0.8,
@@ -303,8 +303,8 @@ export class LAppView {
       // warm
       {
         "bg_add_r": 0.2,
-        "bg_add_g":-0.3,
-        "bg_add_b":-0.3,
+        "bg_add_g": -0.3,
+        "bg_add_b": -0.3,
         "model_r": 0.8,
         "model_g": 0.5,
         "model_b": 0.5,
@@ -313,9 +313,9 @@ export class LAppView {
 
       // green
       {
-        "bg_add_r":-0.3,
+        "bg_add_r": -0.3,
         "bg_add_g": 0.2,
-        "bg_add_b":-0.3,
+        "bg_add_b": -0.3,
         "model_r": 0.5,
         "model_g": 0.8,
         "model_b": 0.5,
@@ -323,9 +323,9 @@ export class LAppView {
       },
       // grey
       {
-        "bg_add_r":-0.3,
-        "bg_add_g":-0.3,
-        "bg_add_b":-0.3,
+        "bg_add_r": -0.3,
+        "bg_add_g": -0.3,
+        "bg_add_b": -0.3,
         "model_r": 0.5,
         "model_g": 0.5,
         "model_b": 0.5,
@@ -334,16 +334,16 @@ export class LAppView {
 
       // normal
       {
-        "bg_add_r":0.0,
-        "bg_add_g":0.0,
-        "bg_add_b":0.0,
+        "bg_add_r": 0.0,
+        "bg_add_g": 0.0,
+        "bg_add_b": 0.0,
         "model_r": 1.0,
         "model_g": 1.0,
         "model_b": 1.0,
         "contrast": 1.0,
       },
     ];
-    
+
     return config;
 
     // return result;
@@ -463,7 +463,7 @@ export class LAppView {
   _isClick: boolean; // クリック中
   state: number;
   next_state: number;
-  socket_state:number;
+  socket_state: number;
   transforming: boolean;
   tfmDuration: number;
   cur_config: Dict;

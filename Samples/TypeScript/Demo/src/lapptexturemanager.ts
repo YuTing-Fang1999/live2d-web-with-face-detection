@@ -114,6 +114,26 @@ export class LAppTextureManager {
     img.src = fileName;
   }
 
+  public getTextureInfo(
+    fileName,
+    callback: (textureInfo: TextureInfo) => void
+  ) {
+    for (
+      let ite: iterator<TextureInfo> = this._textures.begin();
+      ite.notEqual(this._textures.end());
+      ite.preIncrement()
+    ) {
+      if (
+        ite.ptr().fileName == fileName
+      ) {
+        ite.ptr().img = new Image();
+        ite.ptr().img.onload = (): void => callback(ite.ptr());
+        ite.ptr().img.src = fileName;
+        return ite.ptr();
+      }
+    }
+  }
+
   /**
    * 画像の解放
    *
