@@ -298,6 +298,8 @@ export class LAppDelegate {
     // load model
     LAppLive2DManager.getInstance();
 
+    LAppLive2DManager.getInstance().loadAllModel();
+
     LAppPal.updateTime();
 
     this._view.initializeSprite();

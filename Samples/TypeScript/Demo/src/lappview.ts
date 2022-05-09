@@ -143,7 +143,7 @@ export class LAppView {
     live2DManager.setViewMatrix(this._viewMatrix);
 
     // live2DManager.onUpdate();
-    live2DManager.onUpdate(config['model_r'], config['model_g'], config['model_b'], 1.0);
+    live2DManager.onUpdate(0, config['model_r'], config['model_g'], config['model_b'], 1.0);
   }
 
   /**
@@ -402,9 +402,9 @@ export class LAppView {
 
       // 歯車にタップしたか
       if (this._gear.isHit(pointX, pointY)) {
-        // live2DManager.nextScene();
-        LAppLive2DManager.getInstance().getModel(0).nextStyle();
-        LAppLive2DManager.getInstance().getModel(0)._exp = Expression.None;
+        live2DManager.nextScene();
+        // LAppLive2DManager.getInstance().getModel(0).nextStyle();
+        // LAppLive2DManager.getInstance().getModel(0)._exp = Expression.None;
       }
 
       // 歯車にタップしたか

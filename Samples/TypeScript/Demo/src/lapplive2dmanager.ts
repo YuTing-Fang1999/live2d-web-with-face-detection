@@ -27,6 +27,7 @@ export class LAppLive2DManager {
    *
    * @return クラスのインスタンス
    */
+
   public static getInstance(): LAppLive2DManager {
     if (s_instance == null) {
       s_instance = new LAppLive2DManager();
@@ -44,6 +45,21 @@ export class LAppLive2DManager {
     }
 
     s_instance = null;
+  }
+
+  public loadAllModel() {
+    for (let index = 0; index < LAppDefine.ModelDirSize; ++index) {
+      const model: string = LAppDefine.ModelDir[index];
+      const modelPath: string = LAppDefine.ResourcesPath + model + '/';
+      let modelJsonName: string = LAppDefine.ModelDir[index];
+      modelJsonName += '.model3.json';
+
+      // this.releaseAllModel();
+      this._models.pushBack(new LAppModel());
+      this._models.at(index).loadAssets(modelPath, modelJsonName, index);
+      console.log(this._models.getSize());
+    }
+    this.changeScene(0);
   }
 
   /**
@@ -131,33 +147,34 @@ export class LAppLive2DManager {
    * 画面を更新するときの処理
    * モデルの更新処理及び描画処理を行う
    */
-  public onUpdate(r:number, g:number, b:number, a:number): void {
+  public onUpdate(index: number, r: number, g: number, b: number, a: number): void {
     const { width, height } = canvas_gl;
 
     const modelCount: number = this._models.getSize();
+    // console.log('modelCount:', modelCount);
 
-    for (let i = 0; i < modelCount; ++i) {
-      const projection: CubismMatrix44 = new CubismMatrix44();
-      const model: LAppModel = this.getModel(i);
+    // for (let i = 0; i < modelCount; ++i) {
+    const projection: CubismMatrix44 = new CubismMatrix44();
+    const model: LAppModel = this.getModel(index);
 
-      if (model.getModel()) {
-        if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
-          // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
-          model.getModelMatrix().setWidth(2.0);
-          projection.scale(1.0, width / height);
-        } else {
-          projection.scale(height / width, 1.0);
-        }
-
-        // 必要があればここで乗算
-        if (this._viewMatrix != null) {
-          projection.multiplyByMatrix(this._viewMatrix);
-        }
+    if (model.getModel()) {
+      if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
+        // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
+        model.getModelMatrix().setWidth(2.0);
+        projection.scale(1.0, width / height);
+      } else {
+        projection.scale(height / width, 1.0);
       }
 
-      model.update();
-      model.draw(projection, r, g, b, a); // 参照渡しなのでprojectionは変質する。
+      // 必要があればここで乗算
+      if (this._viewMatrix != null) {
+        projection.multiplyByMatrix(this._viewMatrix);
+      }
     }
+
+    model.update();
+    model.draw(projection, r, g, b, a); // 参照渡しなのでprojectionは変質する。
+    // }
   }
 
   /**
@@ -187,9 +204,10 @@ export class LAppLive2DManager {
     let modelJsonName: string = LAppDefine.ModelDir[index];
     modelJsonName += '.model3.json';
 
-    this.releaseAllModel();
-    this._models.pushBack(new LAppModel());
-    this._models.at(0).loadAssets(modelPath, modelJsonName);
+    // this.releaseAllModel();
+    // this._models.pushBack(new LAppModel());
+    console.log(this._models.getSize());
+    // this._models.at(index).loadAssets(modelPath, modelJsonName, index);
   }
 
   public setViewMatrix(m: CubismMatrix44) {
@@ -205,7 +223,6 @@ export class LAppLive2DManager {
     this._viewMatrix = new CubismMatrix44();
     this._models = new csmVector<LAppModel>();
     this._sceneIndex = 0;
-    this.changeScene(this._sceneIndex);
   }
 
   _viewMatrix: CubismMatrix44; // モデル描画に用いるview行列

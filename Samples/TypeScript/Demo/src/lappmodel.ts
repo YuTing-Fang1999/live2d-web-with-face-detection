@@ -87,8 +87,9 @@ export class LAppModel extends CubismUserModel {
    * @param dir
    * @param fileName
    */
-  public loadAssets(dir: string, fileName: string): void {
+  public loadAssets(dir: string, fileName: string, styleNumber: number): void {
     this._modelHomeDir = dir;
+    this._nowStyle = styleNumber;
 
     fetch(`${this._modelHomeDir}${fileName}`)
       .then(response => response.arrayBuffer())
@@ -424,21 +425,21 @@ export class LAppModel extends CubismUserModel {
       // console.log(textureCount);
       for (
         let modelTextureNumber = 0;
-        modelTextureNumber < textureCount;
+        modelTextureNumber < 2;
         modelTextureNumber++
       ) {
         // テクスチャ名が空文字だった場合はロード・バインド処理をスキップ
-        if (this._modelSetting.getTextureFileName(modelTextureNumber) == '') {
+        if (this._modelSetting.getTextureFileName(modelTextureNumber + this._nowStyle * 2) == '') {
           console.log('getTextureFileName null');
           continue;
         }
 
         // WebGLのテクスチャユニットにテクスチャをロードする
         let texturePath =
-          this._modelSetting.getTextureFileName(modelTextureNumber);
+          this._modelSetting.getTextureFileName(modelTextureNumber + this._nowStyle * 2);
         texturePath = this._modelHomeDir + texturePath;
 
-        console.log(texturePath);
+        // console.log(texturePath);
         // ロード完了時に呼び出すコールバック関数
         const onLoad = (textureInfo: TextureInfo): void => {
           this.getRenderer().bindTexture(modelTextureNumber, textureInfo.id);
@@ -449,7 +450,7 @@ export class LAppModel extends CubismUserModel {
             // ロード完了
             this._state = LoadStep.CompleteSetup;
           }
-          console.log('load texture', modelTextureNumber, 'done');
+          // console.log('load texture', modelTextureNumber, 'done');
         };
 
         // 読み込み
