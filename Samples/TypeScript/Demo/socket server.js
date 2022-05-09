@@ -15,6 +15,7 @@ io.sockets.on('connection', (socket) => {
   // }, 10);
 
   socket.on('msg', (data) => {
+    // console.log(data);
     socket.broadcast.emit('jsClient', data);
   });
 

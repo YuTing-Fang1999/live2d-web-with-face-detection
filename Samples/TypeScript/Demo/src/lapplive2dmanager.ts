@@ -62,6 +62,14 @@ export class LAppLive2DManager {
     this.changeScene(0);
   }
 
+  public changeStyle(styleNumber) {
+    this._sceneIndex = styleNumber;
+  }
+
+  public nextStyle() {
+    this._sceneIndex = (this._sceneIndex + 1) % LAppDefine.ModelDirSize;
+  }
+
   /**
    * 現在のシーンで保持しているモデルを返す。
    *

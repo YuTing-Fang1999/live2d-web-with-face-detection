@@ -29,7 +29,7 @@ port = 5252         # have to be same as unity
 # return the socket connected
 def init_TCP():
     s = socketio.Client()
-    s.connect('http://localhost:5252')
+    s.connect('http://localhost:5252/')
     return s
 
 def send_info_to_web(s, data):

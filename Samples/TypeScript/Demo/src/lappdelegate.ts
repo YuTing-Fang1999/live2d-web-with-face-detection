@@ -231,7 +231,7 @@ export class LAppDelegate {
           console.log("transformation done.");
           this._view.state = next_state;
           this._view.transforming = false;
-          LAppLive2DManager.getInstance().getModel(0).changeStyle(this._view.state);
+          LAppLive2DManager.getInstance().changeStyle(this._view.state);
           LAppLive2DManager.getInstance().getModel(0)._exp = Expression.None;
         }
         else console.log("transformation not done.");

@@ -385,30 +385,35 @@ export class LAppModel extends CubismUserModel {
     };
   }
 
-  public changeStyle(styleNumber) {
-    for (
-      let modelTextureNumber = 0;
-      modelTextureNumber < 2;
-      modelTextureNumber++
-    ) {
+  // public nextStyle() {
+  //   this._nowStyle = (this._nowStyle + 1) % this._totStyle;
+  //   this.changeStyle(this._nowStyle);
+  // }
 
-      // WebGLのテクスチャユニットにテクスチャをロードする
-      let texturePath =
-        this._modelSetting.getTextureFileName(modelTextureNumber + styleNumber * 2);
-      texturePath = this._modelHomeDir + texturePath;
+  // public changeStyle(styleNumber) {
+  //   for (
+  //     let modelTextureNumber = 0;
+  //     modelTextureNumber < 2;
+  //     modelTextureNumber++
+  //   ) {
 
-      console.log(texturePath);
-      // ロード完了時に呼び出すコールバック関数
-      const onLoad = (textureInfo: TextureInfo): void => {
-        this.getRenderer().bindTexture(modelTextureNumber, textureInfo.id);
-      };
+  //     // WebGLのテクスチャユニットにテクスチャをロードする
+  //     let texturePath =
+  //       this._modelSetting.getTextureFileName(modelTextureNumber + styleNumber * 2);
+  //     texturePath = this._modelHomeDir + texturePath;
 
-      // 読み込み
-      LAppDelegate.getInstance()
-        .getTextureManager()
-        .getTextureInfo(texturePath, onLoad);
-    }
-  }
+  //     console.log(texturePath);
+  //     // ロード完了時に呼び出すコールバック関数
+  //     const onLoad = (textureInfo: TextureInfo): void => {
+  //       this.getRenderer().bindTexture(modelTextureNumber, textureInfo.id);
+  //     };
+
+  //     // 読み込み
+  //     LAppDelegate.getInstance()
+  //       .getTextureManager()
+  //       .getTextureInfo(texturePath, onLoad);
+  //   }
+  // }
 
   /**
    * テクスチャユニットにテクスチャをロードする
@@ -508,11 +513,6 @@ export class LAppModel extends CubismUserModel {
     }
   }
 
-  public nextStyle() {
-    this._nowStyle = (this._nowStyle + 1) % this._totStyle;
-    this.changeStyle(this._nowStyle);
-  }
-
   public updatePregressBar(exp) {
     if (this._nowExp == Expression.None) { //start exp
       this._nowExp = exp;
@@ -525,7 +525,7 @@ export class LAppModel extends CubismUserModel {
     }
     // continue exp
     if (this._view._bar._rect.right - this._view._bar._rect.left > 0) {
-      this._view._bar._rect.right -= 15;
+      this._view._bar._rect.right -= 5;
       if (this._view._bar._rect.right - this._view._bar._rect.left <= 0) {
         this._view._bar._rect.right = this._view._bar._rect.oriRight;
         this._exp = exp;
@@ -550,10 +550,10 @@ export class LAppModel extends CubismUserModel {
     console.log('[lappmodel] [initSocketIO] Try to connect!');
     const socket = io('http://localhost:5252/', { transports: ['websocket'] });
     const onSocketDataRecvBind = this.onSocketDataRecv;
-    const onSocketDataRecvBind2 = this.nextStyle;
+    // const onSocketDataRecvBind2 = this.nextStyle;
     const onSocketDataRecvBind3 = this.updatePregressBar;
     onSocketDataRecvBind.bind(this);
-    onSocketDataRecvBind2.bind(this);
+    // onSocketDataRecvBind2.bind(this);
     onSocketDataRecvBind3.bind(this);
 
     socket.on('connect', () => {
@@ -1018,6 +1018,8 @@ export class LAppModel extends CubismUserModel {
     this._eyeLOpen = 1;
     this._eyeROpen = 1;
     this._mouthOpen = 0;
+    this._mouthForm = 0;
+
 
     this._nowStyle = 0; //start from 0
     this._totStyle = 1;
