@@ -12,7 +12,7 @@ import { LAppLive2DManager } from './lapplive2dmanager';
 import { LAppPal } from './lapppal';
 import { LAppTextureManager } from './lapptexturemanager';
 import { LAppView } from './lappview';
-import { Expression } from './lappmodel';
+import { Expression } from './lapplive2dmanager';
 export let canvas_gl: HTMLCanvasElement = null;
 export let canvas_2d: HTMLCanvasElement = null;
 export let ctx: CanvasRenderingContext2D = null;
@@ -232,7 +232,7 @@ export class LAppDelegate {
           this._view.state = next_state;
           this._view.transforming = false;
           LAppLive2DManager.getInstance().changeStyle(this._view.state);
-          LAppLive2DManager.getInstance().getModel(0)._exp = Expression.None;
+          // LAppLive2DManager.getInstance().getModel(0)._exp = Expression.None;
         }
         else console.log("transformation not done.");
         // console.log(LAppLive2DManager.getInstance().getModel(0)._exp);

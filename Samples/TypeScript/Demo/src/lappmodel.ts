@@ -40,8 +40,7 @@ import { LAppPal } from './lapppal';
 import { TextureInfo } from './lapptexturemanager';
 import { LAppWavFileHandler } from './lappwavfilehandler';
 
-import { io } from "socket.io-client";
-import { LAppView } from './lappview';
+import { LAppLive2DManager } from './lapplive2dmanager';
 
 enum LoadStep {
   LoadAssets,
@@ -67,14 +66,6 @@ enum LoadStep {
   LoadTexture,
   WaitLoadTexture,
   CompleteSetup,
-}
-
-export enum Expression {
-  Happy,
-  Angry,
-  Surprise,
-  CloseEyes,
-  None
 }
 
 /**
@@ -478,101 +469,6 @@ export class LAppModel extends CubismUserModel {
     this.setupTextures();
   }
 
-  onSocketDataRecv(data) {
-    // console.log('[lappmodel] [onSocketDataRecv] data: ', data);
-    if (data) {
-      this._roll = data.roll;
-      this._pitch = data.pitch;
-      this._yaw = data.yaw;
-      this._eyeLOpen = data.eyeLOpen;
-      this._eyeROpen = data.eyeROpen;
-      this._mouthOpen = data.mouthOpen;
-      this._mouthForm = data.mouthForm;
-
-      this._eyeBallX = data.eyeBallX;
-      this._eyeBallY = data.eyeBallY;
-      // console.log(this._exp);
-      if (this._exp == Expression.None || true) {
-        if (this._mouthForm == 0 && this._mouthOpen > 0.7) {
-          this.updatePregressBar(Expression.Happy);
-        }
-        else if (this._mouthForm == -2 && this._mouthOpen < 0.2) {
-          this.updatePregressBar(Expression.Angry);
-        }
-        else if (this._mouthForm == -2 && this._mouthOpen > 0.8) {
-          this.updatePregressBar(Expression.Surprise);
-        }
-        else if (this._eyeLOpen < -1 && this._eyeROpen < -1) {
-          this.updatePregressBar(Expression.CloseEyes);
-        }
-        else {
-          this._nowExp = Expression.None;
-          this._view._bar._rect.right = this._view._bar._rect.oriRight;
-        }
-      }
-    }
-  }
-
-  public updatePregressBar(exp) {
-    if (this._nowExp == Expression.None) { //start exp
-      this._nowExp = exp;
-      this._view._bar._rect.right = this._view._bar._rect.oriRight;
-    }
-    else if (this._nowExp != exp) { //change exp
-      this._nowExp = Expression.None;
-      this._view._bar._rect.right = this._view._bar._rect.oriRight;
-      return;
-    }
-    // continue exp
-    if (this._view._bar._rect.right - this._view._bar._rect.left > 0) {
-      this._view._bar._rect.right -= 5;
-      if (this._view._bar._rect.right - this._view._bar._rect.left <= 0) {
-        this._view._bar._rect.right = this._view._bar._rect.oriRight;
-        this._exp = exp;
-        this._view.socket_state = this._exp;
-        // alert(this._exp);
-      }
-    }
-
-    this._view._bar.release();
-    gl.deleteProgram(this._view._programId2);
-    this._view._programId2 = this._view.createShader();
-    gl.useProgram(this._view._programId2);
-    this._view._bar.render(this._view._programId2, 0.0, 0.0, 0.0);
-
-  }
-
-  onSocketDisconnected() {
-    console.log('[lappmodel] [onSocketDisconnected] disconnected!');
-  }
-
-  initSocketIO() {
-    console.log('[lappmodel] [initSocketIO] Try to connect!');
-    const socket = io('http://localhost:5252/', { transports: ['websocket'] });
-    const onSocketDataRecvBind = this.onSocketDataRecv;
-    // const onSocketDataRecvBind2 = this.nextStyle;
-    const onSocketDataRecvBind3 = this.updatePregressBar;
-    onSocketDataRecvBind.bind(this);
-    // onSocketDataRecvBind2.bind(this);
-    onSocketDataRecvBind3.bind(this);
-
-    socket.on('connect', () => {
-      console.log('[lappmodel] [initSocketIO] connected!');
-    });
-
-    //   test sever to client
-    // socket.on('date', data => {
-    //   // this.nextStyle();
-    //   // this.updatePregressBar();
-    // });
-
-    socket.on('jsClient', data => {
-      this.onSocketDataRecv(data);
-    });
-
-    socket.on('disconnect', this.onSocketDisconnected);
-  }
-
   /**
    * 更新
    */
@@ -621,24 +517,24 @@ export class LAppModel extends CubismUserModel {
 
     // ドラッグによる変化
     // ドラッグによる顔の向きの調整// -30から30の値を加える
-    this._model.addParameterValueById(this._idParamAngleX, this._yaw); //面左右 yaw
-    this._model.addParameterValueById(this._idParamAngleY, this._pitch); //上下 pitch
-    this._model.addParameterValueById(this._idParamAngleZ, this._roll); //倒左右 roll
+    this._model.addParameterValueById(this._idParamAngleX, this._live2DManager._yaw); //面左右 yaw
+    this._model.addParameterValueById(this._idParamAngleY, this._live2DManager._pitch); //上下 pitch
+    this._model.addParameterValueById(this._idParamAngleZ, this._live2DManager._roll); //倒左右 roll
 
     // ドラッグによる体の向きの調整
     this._model.addParameterValueById(this._idParamBodyAngleX, this._dragX * 10); // -10から10の値を加える
 
     // ドラッグによる目の向きの調整
-    this._model.addParameterValueById(this._idParamEyeBallX, this._eyeBallX); // -1から1の値を加える
-    this._model.addParameterValueById(this._idParamEyeBallY, this._eyeBallY);
+    this._model.addParameterValueById(this._idParamEyeBallX, this._live2DManager._eyeBallX); // -1から1の値を加える
+    this._model.addParameterValueById(this._idParamEyeBallY, this._live2DManager._eyeBallY);
 
     //eye open close [-1, 1]
-    this._model.addParameterValueById(this._idParamEyeLOpen, this._eyeROpen); // -1から1の値を加える
-    this._model.addParameterValueById(this._idParamEyeROpen, this._eyeLOpen); // -1から1の値を加える
+    this._model.addParameterValueById(this._idParamEyeLOpen, this._live2DManager._eyeROpen); // -1から1の値を加える
+    this._model.addParameterValueById(this._idParamEyeROpen, this._live2DManager._eyeLOpen); // -1から1の値を加える
 
     //mouth open close
-    this._model.addParameterValueById(this._idParamMouthOpenY, this._mouthOpen); // -1から1の値を加える
-    this._model.addParameterValueById(this._idParamMouthForm, this._mouthForm); // -1から1の値を加える
+    this._model.addParameterValueById(this._idParamMouthOpenY, this._live2DManager._mouthOpen); // -1から1の値を加える
+    this._model.addParameterValueById(this._idParamMouthForm, this._live2DManager._mouthForm); // -1から1の値を加える
 
 
     // 呼吸など
@@ -1010,23 +906,7 @@ export class LAppModel extends CubismUserModel {
 
 
     ////////////////////////
-    this._roll = 0;
-    this._pitch = 0;
-    this._yaw = 0;
-    this._eyeBallX = 0;
-    this._eyeBallY = 0;
-    this._eyeLOpen = 1;
-    this._eyeROpen = 1;
-    this._mouthOpen = 0;
-    this._mouthForm = 0;
-
-
-    this._nowStyle = 0; //start from 0
-    this._totStyle = 1;
-
-    this._view = LAppDelegate.getInstance()._view;
-    this._exp = Expression.None;
-    this._nowExp = Expression.None;
+    this._live2DManager = LAppLive2DManager.getInstance();
     ////////////////////////
 
     this._state = LoadStep.LoadAssets;
@@ -1035,8 +915,6 @@ export class LAppModel extends CubismUserModel {
     this._motionCount = 0;
     this._allMotionCount = 0;
     this._wavFileHandler = new LAppWavFileHandler();
-
-    this.initSocketIO();
 
   }
 
@@ -1065,25 +943,12 @@ export class LAppModel extends CubismUserModel {
   _idParamMouthForm: CubismIdHandle;
 
   //////////////////////////////////////
-  _roll: number;
-  _pitch: number;
-  _yaw: number;
-  _eyeBallX: number;
-  _eyeBallY: number;
-  _eyeLOpen: number;
-  _eyeROpen: number;
-  _mouthOpen: number;
-  _mouthForm: number;
-
   _nowStyle: number;
   _totStyle: number;
-
-  _view: LAppView; // View情報
+  _live2DManager: LAppLive2DManager;
   //////////////////////////////////////
 
   _state: number; // 現在のステータス管理用
-  _nowExp: number;
-  _exp: number;
   _expressionCount: number; // 表情データカウント
   _textureCount: number; // テクスチャカウント
   _motionCount: number; // モーションデータカウント
