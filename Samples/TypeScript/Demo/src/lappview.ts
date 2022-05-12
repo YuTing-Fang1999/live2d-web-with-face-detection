@@ -11,7 +11,7 @@ import { CubismViewMatrix } from '@framework/math/cubismviewmatrix';
 import * as LAppDefine from './lappdefine';
 import { canvas_gl, gl, LAppDelegate } from './lappdelegate';
 import { LAppLive2DManager } from './lapplive2dmanager';
-import { Expression } from './lappmodel';
+// import { Expression } from './lapplive2dmanager';
 import { LAppPal } from './lapppal';
 import { LAppSprite } from './lappsprite';
 import { TextureInfo } from './lapptexturemanager';

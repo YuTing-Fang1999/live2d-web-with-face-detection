@@ -12,7 +12,7 @@ import { LAppLive2DManager } from './lapplive2dmanager';
 import { LAppPal } from './lapppal';
 import { LAppTextureManager } from './lapptexturemanager';
 import { LAppView } from './lappview';
-import { Expression } from './lapplive2dmanager';
+// import { Expression } from './lapplive2dmanager';
 export let canvas_gl: HTMLCanvasElement = null;
 export let canvas_2d: HTMLCanvasElement = null;
 export let ctx: CanvasRenderingContext2D = null;
