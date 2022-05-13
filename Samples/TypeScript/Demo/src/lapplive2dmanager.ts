@@ -102,7 +102,7 @@ export class LAppLive2DManager {
       }
 
       //freeze if the expression is surprise
-      if (this._exp != Expression.Surprise) {
+      if (this._exp == Expression.None) {
         if (this._mouthForm == 0 && this._mouthOpen > 0.7) {
           this.updatePregressBar(Expression.Happy);
         }
