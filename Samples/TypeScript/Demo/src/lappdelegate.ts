@@ -217,8 +217,12 @@ export class LAppDelegate {
           cur_config[key] = cur_config[key] + diff[key];
           if (diff[key] > 0) cur_config[key] = Math.min(cur_config[key], next_config[key]);
           if (diff[key] < 0) cur_config[key] = Math.max(cur_config[key], next_config[key]);
-
-
+          
+          if(((cur_config[key] - prev_config[key]) / (next_config[key] - prev_config[key])) > 0.5){
+            if(LAppLive2DManager.getInstance()._sceneIndex != next_state){
+              LAppLive2DManager.getInstance().changeStyle(next_state);
+            }
+          }
         }
 
         var change = false;
@@ -231,7 +235,7 @@ export class LAppDelegate {
           console.log("transformation done.");
           this._view.state = next_state;
           this._view.transforming = false;
-          LAppLive2DManager.getInstance().changeStyle(this._view.state);
+          // LAppLive2DManager.getInstance().changeStyle(this._view.state);
           // LAppLive2DManager.getInstance().getModel(0)._exp = Expression.None;
         }
         else console.log("transformation not done.");

@@ -76,6 +76,7 @@ export class LAppLive2DManager {
 
   public changeStyle(styleNumber) {
     this._sceneIndex = styleNumber;
+    // this._view.socket_state = this._exp;
   }
 
   public nextStyle() {
@@ -85,16 +86,20 @@ export class LAppLive2DManager {
   onSocketDataRecv(data) {
     // console.log('[lappmodel] [onSocketDataRecv] data: ', data);
     if (data) {
-      this._roll = data.roll;
-      this._pitch = data.pitch;
-      this._yaw = data.yaw;
-      this._eyeLOpen = data.eyeLOpen;
-      this._eyeROpen = data.eyeROpen;
-      this._mouthOpen = data.mouthOpen;
-      this._mouthForm = data.mouthForm;
+      if (this._exp != Expression.Surprise) {
 
-      this._eyeBallX = data.eyeBallX;
-      this._eyeBallY = data.eyeBallY;
+      
+        this._roll = data.roll;
+        this._pitch = data.pitch;
+        this._yaw = data.yaw;
+        this._eyeLOpen = data.eyeLOpen;
+        this._eyeROpen = data.eyeROpen;
+        this._mouthOpen = data.mouthOpen;
+        this._mouthForm = data.mouthForm;
+
+        this._eyeBallX = data.eyeBallX;
+        this._eyeBallY = data.eyeBallY;
+      }
 
       //freeze if the expression is surprise
       if (this._exp != Expression.Surprise) {
@@ -139,12 +144,13 @@ export class LAppLive2DManager {
         this._view.socket_state = this._exp;
 
         //if exp is Surprise, freeze and change to None after 3s
-        if (exp == Expression.Surprise) {
-          setTimeout(() => {
-            this._exp = Expression.None;
-            this.changeStyle(this._exp);
-          }, 5000);
-        }
+        // if (exp == Expression.Surprise) {
+        setTimeout(() => {
+          this._exp = Expression.None;
+          this._view.socket_state = this._exp;
+          // this.changeStyle(this._exp);
+        }, 5000);
+        // }
       }
     }
 
