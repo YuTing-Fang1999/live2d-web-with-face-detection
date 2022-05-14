@@ -42,8 +42,8 @@ export class LAppView {
     // 画面の表示の拡大縮小や移動の変換を行う行列
     this._viewMatrix = new CubismViewMatrix();
 
-    this.state = 4;
-    this.socket_state = 4;
+    this.state = 0;
+    this.socket_state = 0;
     this.transforming = false;
     this.tfmDuration = 10.0;
     this.configs = this.setConfig();
@@ -290,16 +290,28 @@ export class LAppView {
 
     const config = [
 
-      // cold
+
+      // None
       {
-        "bg_add_r": -0.3,
-        "bg_add_g": -0.3,
-        "bg_add_b": 0.2,
-        "model_r": 0.5,
-        "model_g": 0.5,
-        "model_b": 0.8,
-        "contrast": 0.8,
+        "bg_add_r": 0.0,
+        "bg_add_g": 0.0,
+        "bg_add_b": 0.0,
+        "model_r": 1.0,
+        "model_g": 1.0,
+        "model_b": 1.0,
+        "contrast": 1.0,
       },
+      // happy
+      {
+        "bg_add_r": 0.1,
+        "bg_add_g": 0.1,
+        "bg_add_b": 0.1,
+        "model_r": 1.1,
+        "model_g": 1.1,
+        "model_b": 1.1,
+        "contrast": 0.9,
+      },
+
       // warm
       {
         "bg_add_r": 0.2,
@@ -310,38 +322,32 @@ export class LAppView {
         "model_b": 0.5,
         "contrast": 0.8,
       },
-
-      // green
+      // surprise
       {
-        "bg_add_r": -0.3,
-        "bg_add_g": 0.2,
-        "bg_add_b": -0.3,
-        "model_r": 0.5,
-        "model_g": 0.8,
-        "model_b": 0.5,
-        "contrast": 0.8,
+        "bg_add_r": -0.1,
+        "bg_add_g": -0.1,
+        "bg_add_b": -0.1,
+        "model_r": 0.9,
+        "model_g": 0.9,
+        "model_b": 0.9,
+        "contrast": 0.9,
       },
-      // grey
+      // cold
       {
         "bg_add_r": -0.3,
         "bg_add_g": -0.3,
-        "bg_add_b": -0.3,
+        "bg_add_b": 0.2,
         "model_r": 0.5,
         "model_g": 0.5,
-        "model_b": 0.5,
-        "contrast": 0.5,
+        "model_b": 0.8,
+        "contrast": 0.8,
       },
+      
 
-      // normal
-      {
-        "bg_add_r": 0.0,
-        "bg_add_g": 0.0,
-        "bg_add_b": 0.0,
-        "model_r": 1.0,
-        "model_g": 1.0,
-        "model_b": 1.0,
-        "contrast": 1.0,
-      },
+      
+      
+
+      
     ];
 
     return config;
