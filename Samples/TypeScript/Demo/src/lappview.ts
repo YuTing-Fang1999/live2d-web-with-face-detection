@@ -29,9 +29,11 @@ export class LAppView {
   constructor() {
     this._programId = null;
     this._programId2 = null;
-    this._back = null;
+    this._programId3 = null;
+    // this._back = null;
     this._gear = null;
     this._bar = null;
+    this._backs = [];
 
     // タッチ関係のイベント管理
     this._touchManager = new TouchManager();
@@ -107,26 +109,33 @@ export class LAppView {
     this._bar.release();
     this._bar = null;
 
-    this._back.release();
-    this._back = null;
+    for(let i=0;i<this._backs.length;++i){
+      this._backs[i].release();
+      this._backs[i] = null;
+    }
 
     gl.deleteProgram(this._programId);
     this._programId = null;
 
     gl.deleteProgram(this._programId2);
     this._programId2 = null;
+
+    gl.deleteProgram(this._programId3);
+    this._programId3 = null;
   }
 
   /**
    * 描画する。
    */
   public render(config: Dict): void {
-    gl.useProgram(this._programId);
+    const live2DManager: LAppLive2DManager = LAppLive2DManager.getInstance();
 
-    if (this._back) {
-      this._back.render(this._programId, config['bg_add_r'], config['bg_add_g'], config['bg_add_b']);
+    gl.useProgram(this._programId3);
+    if (this._backs[live2DManager._sceneIndex]) {
+      this._backs[live2DManager._sceneIndex].render(this._programId3, 0.0, 0.0, 0.0);
     }
 
+    gl.useProgram(this._programId);
     if (this._gear) {
       this._gear.render(this._programId, config['bg_add_r'], config['bg_add_g'], config['bg_add_b']);
     }
@@ -135,15 +144,15 @@ export class LAppView {
     if (this._bar) {
       this._bar.render(this._programId2, 0.0, 0.0, 0.0);
     }
-
+    
     gl.flush();
-
-    const live2DManager: LAppLive2DManager = LAppLive2DManager.getInstance();
 
     live2DManager.setViewMatrix(this._viewMatrix);
 
     // live2DManager.onUpdate();
     live2DManager.onUpdate(live2DManager._sceneIndex, config['model_r'], config['model_g'], config['model_b'], 1.0);
+
+    
   }
 
   /**
@@ -159,23 +168,23 @@ export class LAppView {
     let imageName = '';
 
     // 背景画像初期化
-    imageName = LAppDefine.BackImageName;
-
     // 非同期なのでコールバック関数を作成
-    const initBackGroundTexture = (textureInfo: TextureInfo): void => {
-      const x: number = width * 0.5;
-      const y: number = height * 0.5;
-
-      const fwidth = textureInfo.width * 2.0;
-      const fheight = height * 0.95;
-      this._back = new LAppSprite(x, y, fwidth, fheight, textureInfo.id);
-    };
-
-    textureManager.createTextureFromPngFile(
-      resourcesPath + imageName,
-      false,
-      initBackGroundTexture
-    );
+    for(let i=0;i<LAppDefine.BackImageNames.length;++i){
+      const initBackGroundTexture = (textureInfo: TextureInfo): void => {
+        const x: number = width * 0.5;
+        const y: number = height * 0.5;
+  
+        const fwidth = textureInfo.width * 2.0;
+        const fheight = height * 0.95;
+        this._backs[i] = new LAppSprite(x, y, fwidth, fheight, textureInfo.id);
+      };
+      textureManager.createTextureFromPngFile(
+        resourcesPath + LAppDefine.BackImageNames[i],
+        false,
+        initBackGroundTexture
+      );
+    }
+    
 
     // 歯車画像初期化
     imageName = LAppDefine.GearImageName;
@@ -217,6 +226,10 @@ export class LAppView {
     if (this._programId2 == null) {
       // this._programId2 = LAppDelegate.getInstance().createShader();
       this._programId2 = this.createShader();
+    }
+    if (this._programId3 == null) {
+      // this._programId2 = LAppDelegate.getInstance().createShader();
+      this._programId3 = this.createShader();
     }
   }
   public createShader(): WebGLProgram {
@@ -457,13 +470,15 @@ export class LAppView {
   public transformScreenY(deviceY: number): number {
     return this._deviceToScreen.transformY(deviceY);
   }
+  _backs: Array<LAppSprite>;
 
   _touchManager: TouchManager; // タッチマネージャー
   _deviceToScreen: CubismMatrix44; // デバイスからスクリーンへの行列
   _viewMatrix: CubismViewMatrix; // viewMatrix
   _programId: WebGLProgram; // シェーダID
   _programId2: WebGLProgram; // シェーダID
-  _back: LAppSprite; // 背景画像
+  _programId3: WebGLProgram; // シェーダID
+  // _back: LAppSprite; // 背景画像
   _gear: LAppSprite; // ギア画像
   _bar: LAppSprite;
   _changeModel: boolean; // モデル切り替えフラグ

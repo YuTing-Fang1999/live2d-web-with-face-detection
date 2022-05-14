@@ -33,7 +33,7 @@ export const ViewLogicalMaxTop = 2.0;
 export const ResourcesPath = '../../Resources/';
 
 // モデルの後ろにある背景の画像ファイル
-export const BackImageName = 'back_class_normal.png';
+export const BackImageNames: string[] = ['back0.png', 'back1.png', 'back2.png', 'back3.png', 'back4.png'];
 
 // 歯車
 export const GearImageName = 'icon_gear.png';

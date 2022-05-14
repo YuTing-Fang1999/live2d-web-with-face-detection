@@ -68,9 +68,9 @@ export class LAppLive2DManager {
       // this.releaseAllModel();
       this._models.pushBack(new LAppModel());
       this._models.at(index).loadAssets(modelPath, modelJsonName, index);
-      console.log(this._models.getSize());
+      // console.log(this._models.getSize());
     }
-    this.changeScene(0);
+    this.changeStyle(0);
     this.initSocketIO();
   }
 
@@ -313,32 +313,13 @@ export class LAppLive2DManager {
    */
   public nextScene(): void {
     const no: number = (this._sceneIndex + 1) % LAppDefine.ModelDirSize;
-    this.changeScene(no);
+    this.changeStyle(no);
   }
 
   /**
    * シーンを切り替える
    * サンプルアプリケーションではモデルセットの切り替えを行う。
    */
-  public changeScene(index: number): void {
-    this._sceneIndex = index;
-    if (LAppDefine.DebugLogEnable) {
-      LAppPal.printMessage(`[APP]model index: ${this._sceneIndex}`);
-    }
-
-    // ModelDir[]に保持したディレクトリ名から
-    // model3.jsonのパスを決定する。
-    // ディレクトリ名とmodel3.jsonの名前を一致させておくこと。
-    const model: string = LAppDefine.ModelDir[index];
-    const modelPath: string = LAppDefine.ResourcesPath + model + '/';
-    let modelJsonName: string = LAppDefine.ModelDir[index];
-    modelJsonName += '.model3.json';
-
-    // this.releaseAllModel();
-    // this._models.pushBack(new LAppModel());
-    console.log(this._models.getSize());
-    // this._models.at(index).loadAssets(modelPath, modelJsonName, index);
-  }
 
   public setViewMatrix(m: CubismMatrix44) {
     for (let i = 0; i < 16; i++) {
