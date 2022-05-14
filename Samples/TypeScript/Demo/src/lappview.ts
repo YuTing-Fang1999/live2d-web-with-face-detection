@@ -131,8 +131,10 @@ export class LAppView {
     const live2DManager: LAppLive2DManager = LAppLive2DManager.getInstance();
 
     gl.useProgram(this._programId3);
+    // gl.useProgram(this._programId);
     if (this._backs[live2DManager._sceneIndex]) {
-      this._backs[live2DManager._sceneIndex].render(this._programId3, 0.0, 0.0, 0.0);
+      // this._backs[live2DManager._sceneIndex].render(this._programId3, 0.0, 0.0, 0.0);
+      this._backs[live2DManager._sceneIndex].render(this._programId3, config['bg_add_r'], config['bg_add_g'], config['bg_add_b']);
     }
 
     gl.useProgram(this._programId);
@@ -313,19 +315,23 @@ export class LAppView {
         "model_g": 1.0,
         "model_b": 1.0,
         "contrast": 1.0,
+        "saturate": 1.0,
+        "motion": 1,
       },
       // happy
       {
-        "bg_add_r": 0.1,
-        "bg_add_g": 0.1,
-        "bg_add_b": 0.1,
-        "model_r": 1.1,
-        "model_g": 1.1,
-        "model_b": 1.1,
+        "bg_add_r": 0.7,
+        "bg_add_g": 0.6,
+        "bg_add_b": 0.5,
+        "model_r": 1.8,
+        "model_g": 1.2,
+        "model_b": 1.0,  
         "contrast": 0.9,
+        "saturate": 2.0,
+        "motion": 1,
       },
 
-      // warm
+      // angry
       {
         "bg_add_r": 0.2,
         "bg_add_g": -0.3,
@@ -334,26 +340,32 @@ export class LAppView {
         "model_g": 0.5,
         "model_b": 0.5,
         "contrast": 0.8,
+        "saturate": 1.0,
+        "motion": 1,
       },
       // surprise
       {
-        "bg_add_r": -0.1,
-        "bg_add_g": -0.1,
-        "bg_add_b": -0.1,
-        "model_r": 0.9,
-        "model_g": 0.9,
-        "model_b": 0.9,
+        "bg_add_r": 0.1,
+        "bg_add_g": 0.1,
+        "bg_add_b": 0.1,
+        "model_r": 1.2,
+        "model_g": 1.2,
+        "model_b": 1.2,
         "contrast": 0.9,
+        "saturate": 0.5,
+        "motion": 2,
       },
-      // cold
+      // eye
       {
         "bg_add_r": -0.3,
         "bg_add_g": -0.3,
-        "bg_add_b": 0.2,
-        "model_r": 0.5,
-        "model_g": 0.5,
-        "model_b": 0.8,
+        "bg_add_b": 0.0,
+        "model_r": 0.9,
+        "model_g": 0.9,
+        "model_b": 1.0,
         "contrast": 0.8,
+        "saturate": 0.8,
+        "motion": 1,
       },
       
 

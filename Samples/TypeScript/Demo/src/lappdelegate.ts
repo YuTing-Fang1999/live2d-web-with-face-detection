@@ -244,11 +244,22 @@ export class LAppDelegate {
       }
       // this._view.tfmDuration
       this._view.render(cur_config);
+
+      // var samples = cur_config['motion'];
+      // var dy = 10 / samples;
+      // ctx.globalAlpha = 1/(samples/1.2);  // set the global alpha need to up the 
+      //                                   // val a bit or it gets to dark
+      // for(var i = 0; i < samples; i++){  // draw  the image for each sample
+      //     ctx.drawImage(gl.canvas, 0, i*dy); // moving it as we go
+      // }
+      // ctx.globalAlpha = 1;
+
       ctx.drawImage(gl.canvas, 0, 0);
 
 
       // ループのために再帰呼び出し
       var filter_str = 'contrast(' + cur_config['contrast'].toString() + ')';
+      filter_str += ' saturate(' + cur_config['saturate'].toString() + ')'
       ctx.filter = filter_str;
 
       // ループのために再帰呼び出し
