@@ -333,14 +333,14 @@ export class LAppView {
 
       // angry
       {
-        "bg_add_r": 0.2,
-        "bg_add_g": -0.3,
-        "bg_add_b": -0.3,
-        "model_r": 0.8,
-        "model_g": 0.5,
-        "model_b": 0.5,
-        "contrast": 0.8,
-        "saturate": 1.0,
+        "bg_add_r": -0.5,
+        "bg_add_g": -0.5,
+        "bg_add_b": -0.5,
+        "model_r": 0.7,
+        "model_g": 0.7,
+        "model_b": 0.7,
+        "contrast": 1.1,
+        "saturate": 1.1,
         "motion": 1,
       },
       // surprise
