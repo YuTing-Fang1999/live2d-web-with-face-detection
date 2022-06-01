@@ -165,8 +165,8 @@ class FacialFeatures:
             iris_img_point = 468
 
             eye_key_left = FacialFeatures.eye_key_indicies[0]
-            p1 = image_points[eye_key_left[0]]
-            p4 = image_points[eye_key_left[8]]
+            p1 = image_points[eye_key_left[0]] #left
+            p4 = image_points[eye_key_left[8]] #right
 
             eye_y_high = image_points[eye_key_left[12]]
             eye_y_low = image_points[eye_key_left[4]]
