@@ -38,4 +38,14 @@ http://localhost:5000/Samples/TypeScript/Demo/
 3. Redetect Sucessfully
 
 
+### demo
+https://user-images.githubusercontent.com/66452317/189580517-ea94e151-5ba7-4841-80c2-228238d23ed0.mp4  
+
+https://user-images.githubusercontent.com/66452317/189580726-5b80ed84-a86f-4d6a-a8ae-49fb7a3e2e7c.mp4
+
+
+
+
+
+
 
