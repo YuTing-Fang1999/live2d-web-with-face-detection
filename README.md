@@ -44,6 +44,11 @@ https://user-images.githubusercontent.com/66452317/189580517-ea94e151-5ba7-4841-
 https://user-images.githubusercontent.com/66452317/189580726-5b80ed84-a86f-4d6a-a8ae-49fb7a3e2e7c.mp4
 
 
+##References
+[Live2D/CubismWebSamples](https://github.com/Live2D/CubismWebSamples)
+[VTuber-Python-Unity](https://github.com/mmmmmm44/VTuber-Python-Unity)
+
+
 
 
 
