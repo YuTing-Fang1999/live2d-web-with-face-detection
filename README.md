@@ -46,7 +46,9 @@ https://user-images.githubusercontent.com/66452317/189580726-5b80ed84-a86f-4d6a-
 
 ## References
 [Live2D/CubismWebSamples](https://github.com/Live2D/CubismWebSamples)  
+[stories2/CubismWebSamples](https://github.com/stories2/CubismWebSamples)  
 [VTuber-Python-Unity](https://github.com/mmmmmm44/VTuber-Python-Unity)  
+
 
 
 
